@@ -1,9 +1,9 @@
 <?php
-$host = getenv('MYSQLHOST')     ?: 'localhost';
-$user = getenv('MYSQLUSER')     ?: 'root';
-$pass = getenv('MYSQLPASSWORD') ?: '1234567890';
-$db   = getenv('MYSQLDATABASE') ?: 'keddy_petshop';
-$port = getenv('MYSQLPORT')     ?: 3306;
+$host = 'sql205.infinityfree.com';
+$user = 'if0_41962079';
+$pass = '1234567890dien'; // password trong infinityfree
+$db   = 'if0_41962079_keddy_petshop';
+$port = 3306;
 
 try {
     $pdo = new PDO(
