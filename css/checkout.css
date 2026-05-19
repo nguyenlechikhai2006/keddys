@@ -1,0 +1,127 @@
+/* ============================================================
+   checkout.css — Trang thanh toán
+   ============================================================ */
+
+.checkout-container {
+  max-width: 1100px; margin: 30px auto; padding: 0 20px 50px;
+  display: grid; grid-template-columns: 1fr 360px; gap: 30px;
+}
+
+.checkout-title {
+  font-family: 'Baloo 2', cursive; font-size: 1.6rem; font-weight: 800;
+  color: var(--blue); margin-bottom: 24px;
+}
+
+/* Section card */
+.checkout-section {
+  background: white; border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+  padding: 28px; margin-bottom: 20px;
+}
+.checkout-section-title {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 800; font-size: 1.05rem; margin-bottom: 20px; color: var(--text);
+}
+.checkout-section-title .step-num {
+  width: 28px; height: 28px; background: var(--blue); color: white;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; font-weight: 900; flex-shrink: 0;
+}
+
+/* Form */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field.full { grid-column: 1 / -1; }
+.form-field label { font-weight: 700; font-size: 0.88rem; color: #555; }
+.form-field input,
+.form-field textarea {
+  padding: 11px 14px; border: 2px solid var(--border);
+  border-radius: 8px; font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem; outline: none; transition: border 0.2s;
+}
+.form-field input:focus,
+.form-field textarea:focus { border-color: var(--blue); }
+.form-field textarea { resize: vertical; height: 80px; }
+
+/* Payment options */
+.payment-methods { display: flex; flex-direction: column; gap: 12px; }
+.payment-option {
+  border: 2px solid var(--border); border-radius: 10px; padding: 14px 18px;
+  cursor: pointer; display: flex; align-items: center; gap: 14px;
+  transition: all 0.2s;
+}
+.payment-option:hover  { border-color: var(--blue); }
+.payment-option.selected { border-color: var(--blue); background: #f0f7ff; }
+.payment-option input[type="radio"] { width: 18px; height: 18px; accent-color: var(--blue); }
+.payment-option-icon { font-size: 1.5rem; }
+.payment-option-info strong { display: block; font-weight: 800; font-size: 0.95rem; }
+.payment-option-info span  { font-size: 0.82rem; color: #888; }
+
+/* Order summary sidebar */
+.order-summary-box {
+  background: var(--red); border-radius: 16px;
+  color: white; padding: 24px; height: fit-content;
+  position: sticky; top: 100px;
+}
+.order-summary-box h3 {
+  font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800;
+  margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+}
+
+.order-item {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 14px; padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+.order-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.order-item-img {
+  width: 50px; height: 50px; border-radius: 8px;
+  background: rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; flex-shrink: 0;
+}
+.order-item-name { font-weight: 700; font-size: 0.88rem; flex: 1; line-height: 1.3; }
+.order-item-price { font-weight: 900; font-size: 0.95rem; white-space: nowrap; }
+
+.order-total-divider { border: none; border-top: 1px solid rgba(255,255,255,0.3); margin: 16px 0; }
+.order-total-row { display: flex; justify-content: space-between; align-items: center; }
+.order-total-row .label { font-size: 0.95rem; opacity: 0.9; }
+.order-total-row .amount { font-size: 1.4rem; font-weight: 900; }
+
+.btn-confirm-order {
+  width: 100%; padding: 15px; background: white; color: var(--red);
+  border: none; border-radius: 10px; font-family: 'Nunito', sans-serif;
+  font-size: 1rem; font-weight: 900; cursor: pointer; margin-top: 20px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.2s;
+}
+.btn-confirm-order:hover { background: var(--yellow); color: var(--red); }
+
+/* Success page */
+.success-wrapper {
+  max-width: 620px; margin: 60px auto; padding: 0 20px 80px;
+  text-align: center;
+}
+.success-icon { font-size: 5rem; margin-bottom: 20px; }
+.success-title {
+  font-family: 'Baloo 2', cursive; font-size: 2.2rem;
+  font-weight: 800; color: #2e7d32; margin-bottom: 12px;
+}
+.success-sub { color: #666; font-size: 1.05rem; margin-bottom: 30px; }
+.success-info-box {
+  background: white; border-radius: 14px; padding: 24px;
+  margin-bottom: 30px; text-align: left;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+.success-info-box .info-title {
+  font-weight: 800; color: var(--blue); margin-bottom: 12px; font-size: 1rem;
+}
+.success-info-box .info-row {
+  display: flex; justify-content: space-between;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 0.92rem;
+}
+.success-info-box .info-row:last-child { border-bottom: none; }
+.success-info-box .info-row span:first-child { color: #777; }
+.success-info-box .info-row span:last-child { font-weight: 700; }
+.info-total { color: var(--red) !important; font-size: 1.05rem !important; }

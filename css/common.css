@@ -1,0 +1,111 @@
+/* ============================================================
+   common.css — Dùng chung cho tất cả trang Keddy Pet Shop
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800&display=swap');
+
+:root {
+  --blue:       #1565C0;
+  --blue-dark:  #0D47A1;
+  --blue-light: #1976D2;
+  --yellow:     #FFD600;
+  --yellow-dark:#F9A825;
+  --red:        #E53935;
+  --white:      #fff;
+  --gray:       #f4f6fb;
+  --text:       #1a1a2e;
+  --border:     #e0e7ef;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', sans-serif; background: var(--gray); color: var(--text); }
+
+/* ---- HEADER ---- */
+
+/* ---- NAV ---- */
+.nav {
+  background: var(--blue);
+  padding: 0 40px;
+  display: flex; align-items: center;
+}
+.nav a {
+  color: white; text-decoration: none; padding: 12px 18px;
+  font-weight: 700; font-size: 0.95rem;
+  display: flex; align-items: center; gap: 6px;
+  transition: background 0.2s;
+}
+.nav a:hover, .nav a.active { background: var(--blue-dark); }
+.nav .nav-admin { margin-left: auto; background: rgba(255,255,255,0.15); }
+
+/* ---- BREADCRUMB ---- */
+.breadcrumb {
+  background: white; padding: 12px 40px;
+  font-size: 0.88rem; color: #888;
+  border-bottom: 1px solid var(--border);
+}
+.breadcrumb a { color: var(--blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb span { margin: 0 6px; }
+/* ---- TOAST ---- */
+.toast-container {
+  position: fixed; top: 80px; right: 20px;
+  z-index: 9999; display: flex; flex-direction: column; gap: 10px;
+}
+.toast {
+  background: var(--blue); color: white;
+  padding: 14px 20px; border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 700; animation: slideIn 0.3s ease; max-width: 320px;
+}
+.toast.success { background: #2e7d32; }
+.toast.error   { background: var(--red); }
+@keyframes slideIn {
+  from { transform: translateX(100px); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+
+/* ---- MODAL ---- */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-box {
+  background: white; border-radius: 16px; padding: 32px;
+  width: 90%; max-width: 440px; text-align: center;
+  transform: scale(0.9); transition: transform 0.2s;
+}
+.modal-overlay.open .modal-box { transform: none; }
+.modal-box h3 { font-family: 'Baloo 2', cursive; font-size: 1.4rem; font-weight: 800; color: var(--blue); margin-bottom: 12px; }
+.modal-box p  { color: #666; margin-bottom: 24px; }
+.modal-btns { display: flex; gap: 12px; justify-content: center; }
+.modal-btn { padding: 11px 24px; border-radius: 10px; font-family: 'Nunito', sans-serif; font-weight: 700; cursor: pointer; font-size: 0.95rem; }
+.modal-btn.cancel  { border: 2px solid var(--border); background: white; color: #666; }
+.modal-btn.confirm { background: var(--blue); color: white; border: none; }
+
+/* ---- BUTTONS chung ---- */
+.btn-primary {
+  padding: 13px 28px; background: var(--blue); color: white;
+  border: none; border-radius: 10px; font-family: 'Nunito', sans-serif;
+  font-size: 1rem; font-weight: 800; cursor: pointer; transition: background 0.2s;
+}
+.btn-primary:hover { background: var(--blue-dark); }
+
+.btn-yellow {
+  padding: 13px 28px; background: var(--yellow); color: #333;
+  border: none; border-radius: 10px; font-family: 'Nunito', sans-serif;
+  font-size: 1rem; font-weight: 800; cursor: pointer; transition: filter 0.2s;
+}
+.btn-yellow:hover { filter: brightness(0.95); }
+
+.btn-danger {
+  padding: 13px 28px; background: var(--red); color: white;
+  border: none; border-radius: 10px; font-family: 'Nunito', sans-serif;
+  font-size: 1rem; font-weight: 800; cursor: pointer; transition: background 0.2s;
+}
+.btn-danger:hover { background: #c62828; }
+
+/* ---- SHARED JS helpers ---- */
+.hidden { display: none !important; }

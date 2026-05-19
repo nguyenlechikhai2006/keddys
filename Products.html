@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sản Phẩm - Keddy Pet Shop</title>
+    <link rel="stylesheet" href="css/Style.css">
+    <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<script>
+    const s = document.createElement('script');
+    s.src = 'js/livechat.js?v=' + Date.now();
+    s.defer = true;
+    document.head.appendChild(s);
+</script>
+<body>
+
+<!-- ===== HEADER (giống index.html) ===== -->
+<header class="topbar">
+    <div class="topbar-inner">
+
+        <!-- Logo -->
+        <a href="index.html" class="logo">
+            <div class="logo-img">
+                🐾
+            </div>
+            <span class="logo-text">Keddy</span>
+        </a>
+
+        <!-- Search -->
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Tìm kiếm sản phẩm...">
+            <button id="search-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Actions -->
+        <div class="top-actions">
+            <div class="hotline">
+                Hotline
+                <span>123456789</span>
+            </div>
+            <a href="admin.html" class="admin">
+                <i class="fa-solid fa-user-lock"></i>
+                <span>Admin</span>
+            </a>
+            <a href="cart.html" class="top-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                <span>Giỏ Hàng</span>
+            </a>
+           <a href="#" class="top-btn" id="user-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span id="user-name">Đăng Nhập</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+
+            <div class="nav-item">
+                <div class="nav-link">☰ Menu <span class="arrow">▾</span></div>
+                <div class="mega-menu">
+                    <div class="menu-col">
+                        <div class="menu-col-title">Thức Ăn Cho Chó</div>
+                        <ul>
+                            <li><a href="products.html?cat=thuc-an-hat-cho">Thức Ăn Hạt</a></li>
+                            <li><a href="products.html?cat=thuc-an-uot-cho">Thức Ăn Ướt</a></li>
+                            <li><a href="products.html?cat=thuc-an-benh-cho">Thức Ăn Hỗ Trợ Điều Trị Bệnh</a></li>
+                            <li><a href="products.html?cat=thuc-an-huu-co-cho">Thức Ăn Hữu Cơ</a></li>
+                            <li><a href="products.html?cat=thuc-an-khong-ngu-coc-cho">Thức Ăn Không Ngũ Cốc</a></li>
+                        </ul>
+                    </div>
+                    <div class="menu-col">
+                        <div class="menu-col-title">Thức Ăn Cho Mèo</div>
+                        <ul>
+                            <li><a href="products.html?cat=thuc-an-hat-meo">Thức Ăn Hạt</a></li>
+                            <li><a href="products.html?cat=thuc-an-uot-meo">Thức Ăn Ướt</a></li>
+                            <li><a href="products.html?cat=thuc-an-benh-meo">Thức Ăn Điều Trị Bệnh</a></li>
+                            <li><a href="products.html?cat=banh-thuong-meo">Bánh Thưởng Mèo</a></li>
+                        </ul>
+                    </div>
+                    <div class="menu-col">
+                        <div class="menu-col-title">Phụ Kiện & Đồ Chơi</div>
+                        <ul>
+                            <li><a href="products.html?cat=do-choi">Đồ Chơi</a></li>
+                            <li><a href="products.html?cat=thoi-trang-quan-ao">Thời Trang - Quần Áo</a></li>
+                            <li><a href="products.html?cat=vong-co-day-dat">Vòng Cổ - Dây Dắt</a></li>
+                            <li><a href="products.html?cat=dung-cu-an-uong">Dụng Cụ Ăn Uống</a></li>
+                            <li><a href="products.html?cat=nem-chuong-cho-pet">Nệm - Chuồng Cho Pet</a></li>
+                        </ul>
+                    </div>
+                    <div class="menu-col">
+                        <div class="menu-col-title">Chăm Sóc Sức Khoẻ</div>
+                        <ul>
+                            <li><a href="products.html?cat=thuc-pham-chuc-nang">Thực Phẩm Chức Năng</a></li>
+                            <li><a href="products.html?cat=vitamin-bo-sung">Vitamin - Thực Phẩm Bổ Sung</a></li>
+                        </ul>
+                        <div class="menu-col-title" style="margin-top:16px">Vệ Sinh</div>
+                        <ul>
+                            <li><a href="products.html?cat=xit-khu-mui">Xịt Khử Mùi</a></li>
+                            <li><a href="products.html?cat=sua-tam">Sữa Tắm</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-item">
+                <div class="nav-link">🐶 Chó <span class="arrow">▾</span></div>
+                <div class="mega-menu">
+                    <div class="menu-col">
+                        <div class="menu-col-title">Thức Ăn Cho Chó</div>
+                        <ul>
+                            <li><a href="products.html?cat=thuc-an-hat-cho">Thức Ăn Hạt</a></li>
+                            <li><a href="products.html?cat=thuc-an-uot-cho">Thức Ăn Ướt</a></li>
+                            <li><a href="products.html?cat=thuc-an-benh-cho">Thức Ăn Hỗ Trợ Điều Trị Bệnh</a></li>
+                            <li><a href="products.html?cat=thuc-an-huu-co-cho">Thức Ăn Hữu Cơ</a></li>
+                            <li><a href="products.html?cat=thuc-an-khong-ngu-coc-cho">Thức Ăn Không Ngũ Cốc</a></li>
+                        </ul>
+                    </div>
+                    <div class="menu-col">
+                        <div class="menu-col-title">Phụ Kiện Cho Chó</div>
+                        <ul>
+                            <li><a href="products.html?cat=do-choi&pet=cho">Đồ Chơi Cho Chó</a></li>
+                            <li><a href="products.html?cat=thoi-trang-quan-ao&pet=cho">Thời Trang Cho Chó</a></li>
+                            <li><a href="products.html?cat=vong-co-day-dat&pet=cho">Vòng Cổ - Dây Dắt</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-item">
+                <div class="nav-link">🐱 Mèo <span class="arrow">▾</span></div>
+                <div class="mega-menu">
+                    <div class="menu-col">
+                        <div class="menu-col-title">Thức Ăn Cho Mèo</div>
+                        <ul>
+                            <li><a href="products.html?cat=thuc-an-hat-meo">Thức Ăn Hạt</a></li>
+                            <li><a href="products.html?cat=thuc-an-uot-meo">Thức Ăn Ướt</a></li>
+                            <li><a href="products.html?cat=thuc-an-benh-meo">Thức Ăn Điều Trị Bệnh</a></li>
+                            <li><a href="products.html?cat=banh-thuong-meo">Bánh Thưởng Mèo</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-item">
+                <a href="products.html?filter=new" class="nav-link">🆕 Hàng mới về</a>
+            </div>
+
+            <div class="nav-item">
+                <div class="nav-link">🎀 Phụ kiện <span class="arrow">▾</span></div>
+                <div class="mega-menu">
+                    <div class="menu-col">
+                        <div class="menu-col-title">Phụ Kiện & Đồ Chơi</div>
+                        <ul>
+                            <li><a href="products.html?cat=do-choi">Đồ Chơi</a></li>
+                            <li><a href="products.html?cat=thoi-trang-quan-ao">Thời Trang - Quần Áo</a></li>
+                            <li><a href="products.html?cat=vong-co-day-dat">Vòng Cổ - Dây Dắt</a></li>
+                            <li><a href="products.html?cat=dung-cu-an-uong">Dụng Cụ Ăn Uống</a></li>
+                            <li><a href="products.html?cat=nem-chuong-cho-pet">Nệm - Chuồng Cho Pet</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-item">
+                <a href="lucky-wheel.html" class="nav-link">🎡 Vòng quay may mắn</a>
+            </div>
+
+        </div>
+    </nav>
+</header>
+
+<!-- ===== PAGE HERO ===== -->
+<div class="page-hero" id="page-hero">
+    <h1 id="page-title">Tất Cả Sản Phẩm</h1>
+    <p id="page-subtitle">Khám phá hàng trăm sản phẩm chất lượng cho thú cưng của bạn</p>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+    <a href="index.html">🏠 Trang chủ</a>
+    <span>›</span>
+    <span id="breadcrumb-current">Sản phẩm</span>
+</div>
+
+<!-- ===== PRODUCTS LAYOUT ===== -->
+<div class="products-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-box">
+            <div class="sidebar-title">🐾 Loại thú cưng</div>
+            <ul class="sidebar-list">
+                <li><a href="?">Tất cả</a></li>
+                <li><a href="?pet=cho">🐶 Cho Chó</a></li>
+                <li><a href="?pet=meo">🐱 Cho Mèo</a></li>
+                <li><a href="?cat=phu-kien">🎀 Phụ Kiện</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-box">
+            <div class="sidebar-title">🍽️ Thức ăn cho chó</div>
+            <ul class="sidebar-list">
+                <li><a href="?cat=thuc-an-hat-cho">Thức Ăn Hạt</a></li>
+                <li><a href="?cat=thuc-an-uot-cho">Thức Ăn Ướt</a></li>
+                <li><a href="?cat=thuc-an-benh-cho">Hỗ Trợ Điều Trị Bệnh</a></li>
+                <li><a href="?cat=thuc-an-huu-co-cho">Thức Ăn Hữu Cơ</a></li>
+                <li><a href="?cat=thuc-an-khong-ngu-coc-cho">Không Ngũ Cốc</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-box">
+            <div class="sidebar-title">🍱 Thức ăn cho mèo</div>
+            <ul class="sidebar-list">
+                <li><a href="?cat=thuc-an-hat-meo">Thức Ăn Hạt</a></li>
+                <li><a href="?cat=thuc-an-uot-meo">Thức Ăn Ướt</a></li>
+                <li><a href="?cat=thuc-an-benh-meo">Điều Trị Bệnh</a></li>
+                <li><a href="?cat=banh-thuong-meo">Bánh Thưởng</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-box">
+            <div class="sidebar-title">🛍️ Phụ kiện</div>
+            <ul class="sidebar-list">
+                <li><a href="?cat=do-choi">Đồ Chơi</a></li>
+                <li><a href="?cat=thoi-trang-quan-ao">Thời Trang</a></li>
+                <li><a href="?cat=vong-co-day-dat">Vòng Cổ - Dây Dắt</a></li>
+                <li><a href="?cat=dung-cu-an-uong">Dụng Cụ Ăn Uống</a></li>
+                <li><a href="?cat=nem-chuong-cho-pet">Nệm - Chuồng</a></li>
+                <li><a href="?cat=xit-khu-mui">Xịt Khử Mùi</a></li>
+                <li><a href="?cat=sua-tam">Sữa Tắm</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-box">
+            <div class="sidebar-title">💰 Lọc theo giá</div>
+            <ul class="sidebar-list">
+                <li><a href="?maxprice=50000">Dưới 50.000đ</a></li>
+                <li><a href="?minprice=50000&maxprice=150000">50.000 - 150.000đ</a></li>
+                <li><a href="?minprice=150000&maxprice=500000">150.000 - 500.000đ</a></li>
+                <li><a href="?minprice=500000">Trên 500.000đ</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Main products -->
+    <main class="products-main">
+        <div class="products-header">
+            <h2 id="main-title">Tất Cả Sản Phẩm</h2>
+            <select class="sort-select" id="sort-select">
+                <option value="default">Sắp xếp mặc định</option>
+                <option value="price_asc">Giá tăng dần</option>
+                <option value="price_desc">Giá giảm dần</option>
+                <option value="newest">Mới nhất</option>
+                <option value="name_asc">Tên A - Z</option>
+            </select>
+        </div>
+
+        <div class="products-grid" id="products-grid"></div>
+        <div class="pagination" id="pagination"></div>
+    </main>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    <div class="footer-main">
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <div class="footer-logo-icon">🐾</div>
+            </div>
+            <p class="footer-desc">
+                Keddy Pet Shop - Thiên đường cho thú cưng của bạn. Chúng tôi cung cấp những sản phẩm chất lượng nhất từ thức ăn, phụ kiện đến dịch vụ chăm sóc tận tâm.
+            </p>
+            <div class="social-links">
+                <a href="#">f</a>
+                <a href="#">ig</a>
+                <a href="#">yt</a>
+                <a href="#">tt</a>
+            </div>
+        </div>
+        <div class="footer-col">
+            <h4>Danh Mục</h4>
+            <ul class="sidebar-list">
+                <li><a href="?">Tất cả sản phẩm</a></li>
+                <li><a href="?pet=cho">Thức ăn cho chó</a></li>
+                <li><a href="?pet=meo">Thức ăn cho mèo</a></li>
+                <li><a href="?cat=phu-kien">Phụ kiện thú cưng</a></li>
+                <li><a href="?filter=new">Hàng mới về</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Chính Sách</h4>
+            <ul class="sidebar-list">
+                <li><a href="#">Chính sách bảo mật</a></li>
+                <li><a href="#">Chính sách đổi trả</a></li>
+                <li><a href="#">Quy định sử dụng</a></li>
+                <li><a href="#">Hướng dẫn mua hàng</a></li>
+            </ul>
+        </div>
+        <div class="footer-col footer-contact">
+            <h4>Liên Hệ</h4>
+            <p>📍 123 Đường ABC, Quận X, TP. HCM</p>
+            <p>📞 <strong>Hotline: 123 456 789</strong></p>
+            <p>📧 Email: support@keddy.vn</p>
+            <p>🕐 T2 - CN: 08:00 – 21:00</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        © 2025 Keddy Pet Shop. Thiết kế bởi Keddy Team.
+    </div>
+</footer>
+
+<!-- Toast thông báo -->
+<div id="toast" style="
+    position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(80px);
+    background:#2d2416; color:#fff; padding:12px 24px; border-radius:30px;
+    font-size:14px; font-weight:600; z-index:9999;
+    box-shadow:0 8px 24px rgba(0,0,0,0.2);
+    transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s;
+    opacity:0; pointer-events:none;
+"></div>
+
+<!-- ===== SCRIPT ===== -->
+<script>
+
+// ── URL params ──
+const params     = new URLSearchParams(location.search);
+const petFilter  = params.get('pet');
+const catFilter  = params.get('cat');
+const searchQ    = params.get('search');
+const filterType = params.get('filter');
+const minPrice = params.get('minprice') || '';
+const maxPrice = params.get('maxprice') || '';
+
+let currentPage = 1;
+const PER_PAGE  = 12;
+
+// ── Toast ──
+function showToast(msg, ms = 2500) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.opacity = '1';
+    t.style.transform = 'translateX(-50%) translateY(0)';
+    setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transform = 'translateX(-50%) translateY(80px)';
+    }, ms);
+}
+
+// ── Thêm vào giỏ nhanh từ card ──
+async function addToCartQuick(id, name) {
+
+    try {
+
+        const res = await fetch('api/cart.php', {
+            method: 'POST',
+
+            credentials: 'include',
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify({
+                action: 'add',
+                product_id: id,
+                quantity: 1
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+
+            showToast(`✅ Đã thêm "${name}" vào giỏ hàng!`);
+
+        } else {
+
+            showToast('❌ ' + data.message);
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        showToast('❌ Không kết nối được server');
+
+    }
+}
+
+// ── Render sản phẩm ──
+async function renderProducts() {
+    const sort = document.getElementById('sort-select').value;
+
+    const query = new URLSearchParams({
+        pet: petFilter || '',
+        cat: catFilter || '',
+        search: searchQ || '',
+        filter: filterType || '',
+        sort: sort,
+        page: currentPage,
+        per_page: PER_PAGE,
+        minprice: minPrice,  
+        maxprice: maxPrice 
+    });
+
+    try {
+        const res  = await fetch('api/Products.php?' + query);
+        if (!res.ok) throw new Error('API lỗi');
+        const data = await res.json();
+
+        const grid = document.getElementById('products-grid');
+
+        if (!data.products || data.products.length === 0) {
+            grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:#aaa;padding:40px 0">Không tìm thấy sản phẩm nào.</p>`;
+            document.getElementById('pagination').innerHTML = '';
+            return;
+        }
+
+        // =============================================
+        // ✅ CARD SẢN PHẨM — click vào bất kỳ đâu → sang trang chi tiết
+        // =============================================
+        grid.innerHTML = data.products.map(p => `
+            <div class="product-card"
+                 onclick="location.href='product-detail.html?id=${p.id}'"
+                 style="cursor:pointer">
+                <div class="img-wrap">
+                    ${p.is_new == 1 ? '<div class="badge-new">MỚI</div>' : ''}
+                    <img src="${p.image}" alt="${p.name}"
+                         onerror="this.src='images/placeholder.png'">
+                </div>
+                <div class="card-body">
+                    <div class="card-name">${p.name}</div>
+                    <div class="card-price">
+                        ${Number(p.price).toLocaleString('vi-VN')}đ
+                        ${(p.old_price && p.old_price > p.price)
+                            ? `<span style="font-size:12px;color:#bbb;text-decoration:line-through;margin-left:6px">${Number(p.old_price).toLocaleString('vi-VN')}đ</span>`
+                            : ''}
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-buy"
+                            onclick="event.stopPropagation();location.href='product-detail.html?id=${p.id}'">
+                            Xem chi tiết
+                        </button>
+                        <button class="btn-cart"
+    onclick="event.stopPropagation();addToCartQuick(${p.id}, '${p.name.replace(/'/g, "\\'")}')">
+    Thêm vào giỏ
+</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        renderPagination(data.total_pages || 1);
+
+    } catch (err) {
+        console.error(err);
+        document.getElementById('products-grid').innerHTML =
+            `<p style="grid-column:1/-1;text-align:center;color:#e84a4a;padding:40px 0">⚠️ Không thể tải sản phẩm. Vui lòng thử lại.</p>`;
+    }
+}
+
+function goPage(p) {
+    currentPage = p;
+    renderProducts();
+    window.scrollTo({ top: 300, behavior: 'smooth' });
+}
+
+function renderPagination(totalPages) {
+    const container = document.getElementById('pagination');
+    container.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    if (currentPage > 1) {
+        container.innerHTML += `<button onclick="goPage(${currentPage - 1})">←</button>`;
+    }
+
+    let start = Math.max(1, currentPage - 2);
+    let end   = Math.min(totalPages, currentPage + 2);
+
+    for (let i = start; i <= end; i++) {
+        container.innerHTML += `
+            <button onclick="goPage(${i})"
+                    class="${i === currentPage ? 'active-page' : ''}">
+                ${i}
+            </button>`;
+    }
+
+    if (currentPage < totalPages) {
+        container.innerHTML += `<button onclick="goPage(${currentPage + 1})">→</button>`;
+    }
+}
+
+// ── Tiêu đề động ──
+function updatePageTitle() {
+    const titles = {
+        'cho': { h:'Sản Phẩm Cho Chó 🐶', sub:'Thức ăn và phụ kiện chất lượng cao dành riêng cho chó cưng' },
+        'meo': { h:'Sản Phẩm Cho Mèo 🐱', sub:'Thức ăn và phụ kiện được thiết kế đặc biệt cho mèo cưng' },
+        'thuc-an-hat-cho':  { h:'Thức Ăn Hạt Cho Chó',      sub:'Hạt khô chất lượng cao cho chó các lứa tuổi' },
+        'thuc-an-uot-cho':  { h:'Thức Ăn Ướt Cho Chó',      sub:'Pate và thức ăn ướt dinh dưỡng cho chó' },
+        'thuc-an-benh-cho': { h:'Thức Ăn Hỗ Trợ Điều Trị Cho Chó', sub:'Thực phẩm hỗ trợ sức khoẻ chó' },
+        'thuc-an-hat-meo':  { h:'Thức Ăn Hạt Cho Mèo',      sub:'Hạt khô cao cấp cho mèo các lứa tuổi' },
+        'thuc-an-uot-meo':  { h:'Thức Ăn Ướt Cho Mèo',      sub:'Pate và thức ăn ướt dinh dưỡng cho mèo' },
+        'thuc-an-benh-meo': { h:'Thức Ăn Điều Trị Cho Mèo', sub:'Thực phẩm hỗ trợ điều trị và phục hồi sức khoẻ mèo' },
+        'banh-thuong-meo':  { h:'Bánh Thưởng Cho Mèo',      sub:'Snack ngon lành, bổ dưỡng cho mèo cưng' },
+        'do-choi':          { h:'Đồ Chơi Cho Thú Cưng 🎾',  sub:'Đồ chơi vui nhộn, an toàn cho chó và mèo' },
+        'sua-tam':          { h:'Sữa Tắm Thú Cưng 🛁',      sub:'Sữa tắm dịu nhẹ, chăm sóc lông và da thú cưng' },
+        'vong-co-day-dat':  { h:'Vòng Cổ & Dây Dắt 📿',    sub:'Phụ kiện thời trang và an toàn cho thú cưng' },
+    };
+
+    const key  = petFilter || catFilter;
+    let info   = (key && titles[key]) ? titles[key] : { h:'Tất Cả Sản Phẩm', sub:'Khám phá hàng trăm sản phẩm chất lượng cho thú cưng' };
+
+    if (filterType === 'new') { info.h = 'Hàng Mới Về 🆕'; info.sub = 'Sản phẩm mới nhất vừa cập nhật'; }
+    if (searchQ)              { info.h = `Kết quả: "${searchQ}"`; info.sub = 'Kết quả tìm kiếm sản phẩm'; }
+
+    document.getElementById('page-title').textContent       = info.h;
+    document.getElementById('page-subtitle').textContent    = info.sub;
+    document.getElementById('main-title').textContent       = info.h;
+    document.getElementById('breadcrumb-current').textContent = info.h;
+    document.title = info.h + ' - Keddy Pet Shop';
+}
+
+// ── User session ──
+const currentUser = JSON.parse(localStorage.getItem('user'));
+const userBtn     = document.getElementById('user-btn');
+const userName    = document.getElementById('user-name');
+
+if (currentUser) {
+    userName.textContent = currentUser.username;
+    userBtn.addEventListener('click', e => { e.preventDefault(); location.href = 'profile.html'; });
+} else {
+    userBtn.addEventListener('click', e => { e.preventDefault(); location.href = 'login.html'; });
+}
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded', () => {
+    updatePageTitle();
+    renderProducts();
+
+    document.getElementById('sort-select').addEventListener('change', () => {
+        currentPage = 1;
+        renderProducts();
+    });
+
+    document.getElementById('search-btn').addEventListener('click', () => {
+        const q = document.getElementById('search-input').value.trim();
+        if (q) location.href = '?search=' + encodeURIComponent(q);
+    });
+
+    document.getElementById('search-input').addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+            const q = e.target.value.trim();
+            if (q) location.href = '?search=' + encodeURIComponent(q);
+        }
+    });
+
+    // Highlight sidebar active
+    document.querySelectorAll('.sidebar-list a').forEach(a => {
+        if (a.getAttribute('href') && location.search && location.search === a.getAttribute('href')) {
+            a.classList.add('active');
+        }
+    });
+
+    // Dropdown mobile
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function() {
+            const menu = this.parentElement.querySelector('.mega-menu');
+            if (!menu) return;
+            if (window.innerWidth < 900) {
+                const isOpen = menu.style.display === 'flex';
+                document.querySelectorAll('.mega-menu').forEach(m => m.style.display = 'none');
+                menu.style.display = isOpen ? 'none' : 'flex';
+            }
+        });
+    });
+    document.addEventListener('click', e => {
+        if (!e.target.closest('.nav-item'))
+            document.querySelectorAll('.mega-menu').forEach(m => m.style.display = '');
+    });
+});
+</script>
+
+</body>
+</html>

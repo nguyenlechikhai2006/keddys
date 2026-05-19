@@ -1,0 +1,337 @@
+/* ============================================================
+   Keddy AI Chatbot Widget
+   ============================================================ */
+
+/* Nút mở chatbot góc dưới phải */
+#keddy-chat-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1a5fd4 0%, #2e7cf6 100%);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(26,95,212,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    z-index: 9999;
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: kc-pulse 2.5s infinite;
+}
+#keddy-chat-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 10px 32px rgba(26,95,212,0.55);
+}
+#keddy-chat-btn .kc-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 18px;
+    height: 18px;
+    background: #ff6b2b;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes kc-pulse {
+    0%, 100% { box-shadow: 0 6px 24px rgba(26,95,212,0.45); }
+    50%       { box-shadow: 0 6px 36px rgba(26,95,212,0.7), 0 0 0 8px rgba(26,95,212,0.1); }
+}
+
+/* Cửa sổ chat */
+#keddy-chat-window {
+    position: fixed;
+    bottom: 104px;
+    right: 28px;
+    width: 370px;
+    height: 540px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 16px 60px rgba(26,95,212,0.18), 0 2px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    z-index: 9998;
+    overflow: hidden;
+    transform: scale(0.85) translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), opacity 0.25s ease;
+    font-family: 'Be Vietnam Pro', 'Nunito', sans-serif;
+}
+#keddy-chat-window.kc-open {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Header */
+.kc-header {
+    background: linear-gradient(135deg, #1a5fd4 0%, #2e7cf6 100%);
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+.kc-avatar {
+    width: 42px;
+    height: 42px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+.kc-header-info { flex: 1; }
+.kc-header-name {
+    font-weight: 700;
+    color: #fff;
+    font-size: 15px;
+    line-height: 1.2;
+}
+.kc-header-status {
+    font-size: 12px;
+    color: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 2px;
+}
+.kc-header-status::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    background: #4ade80;
+    border-radius: 50%;
+    display: inline-block;
+    animation: kc-blink 1.5s infinite;
+}
+@keyframes kc-blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+}
+.kc-close-btn {
+    background: rgba(255,255,255,0.18);
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+.kc-close-btn:hover { background: rgba(255,255,255,0.3); }
+
+/* Gợi ý nhanh */
+.kc-suggestions {
+    padding: 10px 14px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    flex-shrink: 0;
+}
+.kc-suggestion-chip {
+    background: #f0f5ff;
+    color: #1a5fd4;
+    border: 1.5px solid #c7d8fc;
+    border-radius: 20px;
+    padding: 5px 13px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.15s;
+    white-space: nowrap;
+    font-family: inherit;
+}
+.kc-suggestion-chip:hover {
+    background: #1a5fd4;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+/* Khu vực tin nhắn */
+.kc-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 14px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-behavior: smooth;
+}
+.kc-messages::-webkit-scrollbar { width: 4px; }
+.kc-messages::-webkit-scrollbar-track { background: transparent; }
+.kc-messages::-webkit-scrollbar-thumb { background: #c7d8fc; border-radius: 4px; }
+
+/* Tin nhắn */
+.kc-msg {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    animation: kc-fadeup 0.25s ease;
+}
+@keyframes kc-fadeup {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.kc-msg.kc-user { flex-direction: row-reverse; }
+
+.kc-msg-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #e8effd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+.kc-msg.kc-user .kc-msg-avatar {
+    background: #1a5fd4;
+    font-size: 13px;
+    color: #fff;
+    font-weight: 700;
+}
+
+.kc-bubble {
+    max-width: 78%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    word-break: break-word;
+}
+.kc-msg.kc-bot .kc-bubble {
+    background: #f4f6fb;
+    color: #1a2236;
+    border-bottom-left-radius: 5px;
+}
+.kc-msg.kc-user .kc-bubble {
+    background: linear-gradient(135deg, #1a5fd4, #2e7cf6);
+    color: #fff;
+    border-bottom-right-radius: 5px;
+}
+
+/* Typing indicator */
+.kc-typing .kc-bubble {
+    padding: 12px 16px;
+}
+.kc-dots {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+.kc-dots span {
+    width: 7px;
+    height: 7px;
+    background: #8896ab;
+    border-radius: 50%;
+    animation: kc-dot 1.2s infinite;
+}
+.kc-dots span:nth-child(2) { animation-delay: 0.2s; }
+.kc-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes kc-dot {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30%           { transform: translateY(-5px); opacity: 1; }
+}
+
+/* Input */
+.kc-input-area {
+    padding: 12px 14px;
+    border-top: 1.5px solid #e8effd;
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    flex-shrink: 0;
+    background: #fff;
+}
+.kc-input {
+    flex: 1;
+    border: 1.5px solid #c7d8fc;
+    border-radius: 12px;
+    padding: 9px 13px;
+    font-size: 13.5px;
+    font-family: inherit;
+    color: #1a2236;
+    resize: none;
+    outline: none;
+    max-height: 90px;
+    min-height: 38px;
+    line-height: 1.45;
+    transition: border-color 0.2s;
+    background: #f8faff;
+}
+.kc-input:focus { border-color: #2e7cf6; background: #fff; }
+.kc-input::placeholder { color: #8896ab; }
+
+.kc-send-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1a5fd4, #2e7cf6);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.15s, opacity 0.15s;
+    font-size: 16px;
+}
+.kc-send-btn:hover { transform: scale(1.08); }
+.kc-send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Footer note */
+.kc-footer-note {
+    text-align: center;
+    font-size: 10.5px;
+    color: #8896ab;
+    padding: 4px 14px 10px;
+    flex-shrink: 0;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    #keddy-chat-window {
+        width: calc(100vw - 24px);
+        right: 12px;
+        bottom: 90px;
+        height: 70vh;
+    }
+    #keddy-chat-btn { bottom: 18px; right: 18px; }
+}
+/* Fix: đảm bảo chat window ẩn khi chưa mở */
+#keddy-chat-window {
+    transform: scale(0.85) translateY(20px) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+#keddy-chat-window.kc-open {
+    transform: scale(1) translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: all !important;
+}
+#keddy-chat-window {
+    display: flex !important;
+    flex-direction: column !important;
+}

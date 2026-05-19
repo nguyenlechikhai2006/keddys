@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trang Cá Nhân - Keddy Pet Shop</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/profile.css"/>
+  <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<script>
+    const s = document.createElement('script');
+    s.src = 'js/livechat.js?v=' + Date.now();
+    s.defer = true;
+    document.head.appendChild(s);
+</script>
+<body>
+
+<!-- HEADER -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-img">🐾</div>
+      <span class="logo-text">Keddy</span>
+    </a>
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Tìm kiếm sản phẩm...">
+      <button id="search-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+    </div>
+    <div class="top-actions">
+      <div class="hotline">Hotline <span>123456789</span></div>
+      <a href="admin.html" class="admin">
+        <i class="fa-solid fa-user-lock"></i>
+        <span>Admin</span>
+      </a>
+      <a href="cart.html" class="top-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span>Giỏ Hàng</span>
+      </a>
+      <a href="profile.html" class="top-btn" id="user-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span id="user-name">Đăng Nhập</span>
+      </a>
+    </div>
+  </div>
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <div class="nav-item">
+        <div class="nav-link">☰ Menu <span class="arrow">▾</span></div>
+        <div class="mega-menu">
+          <div class="menu-col">
+            <div class="menu-col-title">Thức Ăn Cho Chó</div>
+            <ul>
+              <li><a href="products.html?cat=thuc-an-hat-cho">Thức Ăn Hạt</a></li>
+              <li><a href="products.html?cat=thuc-an-uot-cho">Thức Ăn Ướt</a></li>
+              <li><a href="products.html?cat=thuc-an-benh-cho">Hỗ Trợ Điều Trị Bệnh</a></li>
+              <li><a href="products.html?cat=thuc-an-huu-co-cho">Thức Ăn Hữu Cơ</a></li>
+              <li><a href="products.html?cat=thuc-an-khong-ngu-coc-cho">Thức Ăn Không Ngũ Cốc</a></li>
+            </ul>
+          </div>
+          <div class="menu-col">
+            <div class="menu-col-title">Thức Ăn Cho Mèo</div>
+            <ul>
+              <li><a href="products.html?cat=thuc-an-hat-meo">Thức Ăn Hạt</a></li>
+              <li><a href="products.html?cat=thuc-an-uot-meo">Thức Ăn Ướt</a></li>
+              <li><a href="products.html?cat=thuc-an-benh-meo">Thức Ăn Điều Trị Bệnh</a></li>
+              <li><a href="products.html?cat=banh-thuong-meo">Bánh Thưởng Mèo</a></li>
+            </ul>
+          </div>
+          <div class="menu-col">
+            <div class="menu-col-title">Phụ Kiện & Đồ Chơi</div>
+            <ul>
+              <li><a href="products.html?cat=do-choi">Đồ Chơi</a></li>
+              <li><a href="products.html?cat=thoi-trang-quan-ao">Thời Trang - Quần Áo</a></li>
+              <li><a href="products.html?cat=vong-co-day-dat">Vòng Cổ - Dây Dắt</a></li>
+              <li><a href="products.html?cat=dung-cu-an-uong">Dụng Cụ Ăn Uống</a></li>
+              <li><a href="products.html?cat=nem-chuong-cho-pet">Nệm - Chuồng Cho Pet</a></li>
+            </ul>
+          </div>
+          <div class="menu-col">
+            <div class="menu-col-title">Chăm Sóc Sức Khoẻ</div>
+            <ul>
+              <li><a href="products.html?cat=thuc-pham-chuc-nang">Thực Phẩm Chức Năng</a></li>
+              <li><a href="products.html?cat=vitamin-bo-sung">Vitamin - Thực Phẩm Bổ Sung</a></li>
+            </ul>
+            <div class="menu-col-title" style="margin-top:16px">Vệ Sinh</div>
+            <ul>
+              <li><a href="products.html?cat=xit-khu-mui">Xịt Khử Mùi</a></li>
+              <li><a href="products.html?cat=sua-tam">Sữa Tắm</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="nav-item">
+        <div class="nav-link">🐶 Chó <span class="arrow">▾</span></div>
+        <div class="mega-menu">
+          <div class="menu-col">
+            <div class="menu-col-title">Thức Ăn Cho Chó</div>
+            <ul>
+              <li><a href="products.html?cat=thuc-an-hat-cho">Thức Ăn Hạt</a></li>
+              <li><a href="products.html?cat=thuc-an-uot-cho">Thức Ăn Ướt</a></li>
+              <li><a href="products.html?cat=thuc-an-benh-cho">Hỗ Trợ Điều Trị Bệnh</a></li>
+            </ul>
+          </div>
+          <div class="menu-col">
+            <div class="menu-col-title">Phụ Kiện Cho Chó</div>
+            <ul>
+              <li><a href="products.html?cat=do-choi&pet=cho">Đồ Chơi Cho Chó</a></li>
+              <li><a href="products.html?cat=vong-co-day-dat&pet=cho">Vòng Cổ - Dây Dắt</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="nav-item">
+        <div class="nav-link">🐱 Mèo <span class="arrow">▾</span></div>
+        <div class="mega-menu">
+          <div class="menu-col">
+            <div class="menu-col-title">Thức Ăn Cho Mèo</div>
+            <ul>
+              <li><a href="products.html?cat=thuc-an-hat-meo">Thức Ăn Hạt</a></li>
+              <li><a href="products.html?cat=thuc-an-uot-meo">Thức Ăn Ướt</a></li>
+              <li><a href="products.html?cat=banh-thuong-meo">Bánh Thưởng Mèo</a></li>
+            </ul>
+          </div>
+          <div class="menu-col">
+            <div class="menu-col-title">Phụ Kiện Mèo</div>
+            <ul>
+              <li><a href="products.html?cat=do-choi&pet=meo">Đồ Chơi Cho Mèo</a></li>
+              <li><a href="products.html?cat=vong-co-day-dat&pet=meo">Vòng Cổ - Dây Dắt</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="nav-item">
+        <a href="products.html?filter=new" class="nav-link">🆕 Hàng mới về</a>
+      </div>
+      <div class="nav-item">
+        <div class="nav-link">🎀 Phụ kiện <span class="arrow">▾</span></div>
+        <div class="mega-menu">
+          <div class="menu-col">
+            <div class="menu-col-title">Phụ Kiện & Đồ Chơi</div>
+            <ul>
+              <li><a href="products.html?cat=do-choi">Đồ Chơi</a></li>
+              <li><a href="products.html?cat=thoi-trang-quan-ao">Thời Trang - Quần Áo</a></li>
+              <li><a href="products.html?cat=vong-co-day-dat">Vòng Cổ - Dây Dắt</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="nav-item">
+        <a href="lucky-wheel.html" class="nav-link">🎡 Vòng quay may mắn</a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- HERO -->
+<div class="profile-hero">
+  <div class="hero-inner">
+    <div class="avatar-wrap">
+      <div class="big-avatar" id="hero-avatar">🎅</div>
+      <div class="avatar-badge">⭐</div>
+    </div>
+    <div class="hero-info">
+      <h2 id="hero-title">NHÀ CỦA BẠN</h2>
+      <p>Thành viên của Keddy Pet 🎄</p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num" id="totalOrders">0</div>
+          <div class="stat-label">Đơn hàng</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Điểm thưởng</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Đã đánh giá</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="profile-main">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="profile-card">
+      <h4>Hồ sơ cá nhân</h4>
+      <div class="info-field">
+        <label>Email nhận quà</label>
+        <span id="profile-email">—</span>
+      </div>
+      <div class="info-field">
+        <label>Số điện thoại</label>
+        <span id="profile-phone">—</span>
+      </div>
+      <div class="info-field">
+        <label>Địa chỉ</label>
+        <span id="profile-address">—</span>
+      </div>
+      <button class="edit-btn" id="btn-edit-profile">✏️ Chỉnh sửa hồ sơ</button>
+    </div>
+
+    <div class="profile-nav">
+      <a href="#orders"    class="active" data-section="orders">   <span class="nav-icon">📋</span> Lịch sử đặt hàng</a>
+      <a href="#wishlist"  data-section="wishlist">  <span class="nav-icon">❤️</span> Sản phẩm yêu thích</a>
+      <a href="#reviews"   data-section="reviews">   <span class="nav-icon">⭐</span> Đánh giá của tôi</a>
+      <a href="#addresses" data-section="addresses"> <span class="nav-icon">📍</span> Địa chỉ giao hàng</a>
+      <a href="#settings"  data-section="settings">  <span class="nav-icon">⚙️</span> Cài đặt tài khoản</a>
+    </div>
+
+    <div class="profile-card" style="text-align:center;">
+      <button class="logout-btn" id="btn-logout">🚪 ĐĂNG XUẤT KHỎI CỬA HÀNG</button>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="profile-content">
+
+    <!-- ORDERS -->
+    <div id="section-orders">
+      <div class="orders-panel">
+        <div class="panel-header">
+          <h3>🎁 LỊCH SỬ ĐẶT HÀNG (<span id="orderCount">0</span>)</h3>
+        </div>
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">Tất cả</button>
+          <button class="filter-tab" data-filter="pending">Chờ xử lý</button>
+          <button class="filter-tab" data-filter="shipping">Đang giao</button>
+          <button class="filter-tab" data-filter="done">Hoàn thành</button>
+        </div>
+        <div id="ordersList">
+          <div class="order-card" style="text-align:center;padding:40px;">
+            <p style="font-size:40px;">⏳</p>
+            <p>Đang tải đơn hàng...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WISHLIST -->
+    <div id="section-wishlist" style="display:none;">
+      <div class="orders-panel">
+        <div class="panel-header"><h3>❤️ Sản phẩm yêu thích</h3></div>
+        <div class="order-card" style="text-align:center;padding:40px;">
+          <p style="font-size:40px;margin-bottom:12px;">❤️</p>
+          <p style="font-size:16px;">Chưa có sản phẩm yêu thích</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div id="section-reviews" style="display:none;">
+      <div class="orders-panel">
+        <div class="panel-header"><h3>⭐ Đánh giá của tôi</h3></div>
+        <div class="order-card" style="text-align:center;padding:40px;">
+          <p style="font-size:40px;margin-bottom:12px;">📝</p>
+          <p style="font-size:16px;">Chưa có đánh giá nào</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADDRESSES -->
+    <div id="section-addresses" style="display:none;">
+      <div class="orders-panel">
+        <div class="panel-header"><h3>📍 Địa chỉ giao hàng</h3></div>
+        <div class="order-card" id="addresses-content">
+          <p style="font-weight:700;" id="address-display">—</p>
+          <p style="font-size:13px;margin-top:4px;" id="phone-display">—</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="section-settings" style="display:none;">
+      <div class="orders-panel">
+        <div class="panel-header"><h3>⚙️ Cài đặt tài khoản</h3></div>
+        <div class="order-card">
+          <div style="display:flex;flex-direction:column;gap:16px;max-width:400px;">
+            <div>
+              <label style="font-weight:700;font-size:13px;">Tên hiển thị</label>
+              <input type="text" id="settings-username" style="width:100%;border:2px solid #E0E6EF;border-radius:10px;padding:10px 14px;margin-top:6px;font-size:14px;">
+            </div>
+            <div>
+              <label style="font-weight:700;font-size:13px;">Email</label>
+              <input type="email" id="settings-email" style="width:100%;border:2px solid #E0E6EF;border-radius:10px;padding:10px 14px;margin-top:6px;font-size:14px;">
+            </div>
+            <div>
+              <label style="font-weight:700;font-size:13px;">Mật khẩu mới</label>
+              <input type="password" id="settings-password" placeholder="Để trống nếu không đổi" style="width:100%;border:2px solid #E0E6EF;border-radius:10px;padding:10px 14px;margin-top:6px;font-size:14px;">
+            </div>
+            <button id="btn-save-settings" style="background:var(--blue);color:#fff;border:none;border-radius:50px;padding:12px;font-weight:800;font-size:14px;cursor:pointer;">
+              💾 Lưu thay đổi
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end .profile-content -->
+</main>
+
+<footer>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="footer-logo"><div class="footer-logo-icon">🐾</div></div>
+      <p class="footer-desc">Keddy Pet Shop - Thiên đường cho thú cưng của bạn.</p>
+      <div class="social-links">
+        <a href="#" title="Facebook">f</a>
+        <a href="#" title="Instagram">ig</a>
+        <a href="#" title="YouTube">yt</a>
+        <a href="#" title="TikTok">tt</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Danh Mục</h4>
+      <ul class="sidebar-list">
+        <li><a href="products.html">Tất cả sản phẩm</a></li>
+        <li><a href="products.html?pet=cho">Thức ăn cho chó</a></li>
+        <li><a href="products.html?pet=meo">Thức ăn cho mèo</a></li>
+        <li><a href="products.html?filter=new">Hàng mới về</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Chính Sách</h4>
+      <ul class="sidebar-list">
+        <li><a href="#">Chính sách bảo mật</a></li>
+        <li><a href="#">Chính sách đổi trả</a></li>
+        <li><a href="#">Hướng dẫn mua hàng</a></li>
+      </ul>
+    </div>
+    <div class="footer-col footer-contact">
+      <h4>Liên Hệ</h4>
+      <p>📍 123 Đường ABC, Quận X, TP. HCM</p>
+      <p>📞 <strong>Hotline: 123 456 789</strong></p>
+      <p>📧 Email: support@keddy.vn</p>
+      <p>🕐 T2 - CN: 08:00 – 21:00</p>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2025 Keddy Pet Shop. Thiết kế bởi Keddy Team.</div>
+</footer>
+
+<script>
+// =====================================================
+// UTILS
+// =====================================================
+function escapeHTML(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// FIX: Map status DB → nhãn hiển thị + data-filter value
+const STATUS_MAP = {
+  pending:   { label: 'Chờ xử lý',  filter: 'pending',  style: 'background:#fff3cd;color:#856404;' },
+  shipping:  { label: 'Đang giao',  filter: 'shipping', style: 'background:#cce5ff;color:#004085;' },
+  done:      { label: 'Hoàn thành', filter: 'done',     style: 'background:#d4edda;color:#155724;' },
+  cancelled: { label: 'Đã hủy',     filter: 'cancelled',style: 'background:#f8d7da;color:#721c24;' },
+};
+
+// =====================================================
+// KIỂM TRA ĐĂNG NHẬP — FIX: redirect về login nếu chưa đăng nhập
+// =====================================================
+const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+
+if (!currentUser) {
+  location.href = 'login.html';
+}
+
+// =====================================================
+// HEADER USER
+// =====================================================
+document.getElementById('user-name').textContent = currentUser?.username || 'Đăng Nhập';
+
+// =====================================================
+// SECTION NAVIGATION — FIX: dùng event delegation, không dùng inline onclick
+// =====================================================
+const ALL_SECTIONS = ['orders', 'wishlist', 'reviews', 'addresses', 'settings'];
+
+function showSection(name) {
+  ALL_SECTIONS.forEach(s => {
+    const el = document.getElementById('section-' + s);
+    if (el) el.style.display = s === name ? '' : 'none';
+  });
+  document.querySelectorAll('.profile-nav a').forEach(a => {
+    a.classList.toggle('active', a.dataset.section === name);
+  });
+}
+
+document.querySelectorAll('.profile-nav a').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    showSection(this.dataset.section);
+  });
+});
+
+// FIX: editProfile dùng addEventListener, không inline onclick
+document.getElementById('btn-edit-profile').addEventListener('click', () => {
+  showSection('settings');
+});
+
+// =====================================================
+// FILTER TABS — FIX: dùng event delegation, không inline onclick
+// =====================================================
+document.querySelectorAll('.filter-tab').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const filter = this.dataset.filter;
+    document.querySelectorAll('#ordersList .order-card').forEach(card => {
+      // FIX: filter theo data-status thật, không phải "all"
+      card.style.display = (filter === 'all' || card.dataset.status === filter) ? '' : 'none';
+    });
+  });
+});
+
+// =====================================================
+// LOGOUT — FIX: dùng addEventListener
+// =====================================================
+document.getElementById('btn-logout').addEventListener('click', async () => {
+  if (confirm('Bạn có muốn đăng xuất?')) {
+    try {
+      await fetch('api/logout.php', { method: 'POST', credentials: 'include' });
+    } catch(e) {}
+    localStorage.removeItem('user');
+    location.href = 'index.html';
+  }
+});
+
+// =====================================================
+// SAVE SETTINGS
+// =====================================================
+document.getElementById('btn-save-settings').addEventListener('click', () => {
+  alert('Đã lưu thay đổi!');
+});
+
+// =====================================================
+// SEARCH
+// =====================================================
+document.getElementById('search-btn').addEventListener('click', () => {
+  const q = document.getElementById('search-input').value.trim();
+  if (q) location.href = 'products.html?search=' + encodeURIComponent(q);
+});
+document.getElementById('search-input').addEventListener('keypress', e => {
+  if (e.key === 'Enter') {
+    const q = e.target.value.trim();
+    if (q) location.href = 'products.html?search=' + encodeURIComponent(q);
+  }
+});
+
+// =====================================================
+// MOBILE DROPDOWN
+// =====================================================
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', function() {
+    const menu = this.parentElement.querySelector('.mega-menu');
+    if (!menu || window.innerWidth >= 900) return;
+    const isOpen = menu.style.display === 'flex';
+    document.querySelectorAll('.mega-menu').forEach(m => m.style.display = 'none');
+    menu.style.display = isOpen ? 'none' : 'flex';
+  });
+});
+document.addEventListener('click', e => {
+  if (!e.target.closest('.nav-item'))
+    document.querySelectorAll('.mega-menu').forEach(m => m.style.display = '');
+});
+
+// =====================================================
+// LOAD USER INFO — FIX: dùng đường dẫn tương đối, 1 lần duy nhất
+// =====================================================
+async function loadUserInfo() {
+  try {
+    const res  = await fetch(`api/get_user.php?username=${encodeURIComponent(currentUser.username)}`, {
+      credentials: 'include'
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    // Header
+    document.getElementById('user-name').textContent = data.username || currentUser.username;
+
+    // Hero
+    document.getElementById('hero-title').textContent = 'NHÀ CỦA ' + (data.username || currentUser.username).toUpperCase();
+
+    // Sidebar profile
+    document.getElementById('profile-email').textContent   = data.email   || '—';
+    document.getElementById('profile-phone').textContent   = data.phone   || '—';
+    document.getElementById('profile-address').textContent = data.address || '—';
+
+    // Addresses section
+    document.getElementById('address-display').textContent = data.address || '—';
+    document.getElementById('phone-display').textContent   = data.phone ? 'SĐT: ' + data.phone : '—';
+
+    // Settings form
+    document.getElementById('settings-username').value = data.username || '';
+    document.getElementById('settings-email').value    = data.email    || '';
+
+  } catch (err) {
+    console.error('Lỗi load user info:', err);
+    // Fallback: dùng dữ liệu từ localStorage
+    const name = currentUser.username || '';
+    document.getElementById('hero-title').textContent = 'NHÀ CỦA ' + name.toUpperCase();
+    document.getElementById('user-name').textContent  = name;
+    document.getElementById('settings-username').value = name;
+  }
+}
+
+// =====================================================
+// LOAD ORDERS — FIX: dùng đường dẫn tương đối
+//               FIX: data-status lấy từ order.status thật
+//               FIX: badge hiển thị nhãn đúng từ STATUS_MAP
+// =====================================================
+async function loadOrders() {
+  const container = document.getElementById('ordersList');
+
+  try {
+    const res  = await fetch(`api/get_orders.php?username=${encodeURIComponent(currentUser.username)}`, {
+      credentials: 'include'
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const result = await res.json();
+    const orders = result.data || [];
+
+    // Cập nhật số đơn
+    document.getElementById('orderCount').textContent  = orders.length;
+    document.getElementById('totalOrders').textContent = orders.length;
+
+    if (orders.length === 0) {
+      container.innerHTML = `
+        <div class="order-card" style="text-align:center;padding:40px;">
+          <p style="font-size:40px;">📦</p>
+          <p>Chưa có đơn hàng nào</p>
+          <a href="products.html" style="color:var(--blue);font-weight:700;">Mua sắm ngay →</a>
+        </div>
+      `;
+      return;
+    }
+
+    // FIX: data-status lấy từ order.status, không hardcode "all"
+    container.innerHTML = orders.map(order => {
+      const statusKey = (order.status || 'pending').toLowerCase();
+      const statusInfo = STATUS_MAP[statusKey] || { label: order.status, filter: statusKey, style: '' };
+
+      return `
+        <div class="order-card" data-status="${escapeHTML(statusInfo.filter)}">
+          <div class="order-card-header">
+            <div class="order-code">MÃ: <span>${escapeHTML(order.order_code || '')}</span></div>
+            <span class="status-badge" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;${statusInfo.style}">
+              ${escapeHTML(statusInfo.label)}
+            </span>
+          </div>
+          <div class="order-meta">
+            <span>📅 ${escapeHTML(order.created_at || '')}</span>
+            <span>📍 ${escapeHTML(order.address || '')}</span>
+          </div>
+          <div class="order-card-footer">
+            <div class="order-total">${Number(order.total || 0).toLocaleString('vi-VN')} đ</div>
+            <div style="display:flex;gap:8px;">
+              <button onclick="viewOrder('${escapeHTML(order.order_code)}')"
+                style="padding:6px 14px;border-radius:8px;border:1.5px solid #ccc;background:#fff;cursor:pointer;font-size:13px;">
+                Xem chi tiết
+              </button>
+              ${statusKey === 'pending' ? `
+              <button onclick="cancelOrder('${escapeHTML(order.order_code)}')"
+                style="padding:6px 14px;border-radius:8px;border:1.5px solid #e84a4a;color:#e84a4a;background:#fff;cursor:pointer;font-size:13px;">
+                Hủy đơn
+              </button>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+  } catch (err) {
+    console.error('Lỗi load orders:', err);
+    container.innerHTML = `
+      <div class="order-card" style="text-align:center;padding:40px;">
+        <p style="font-size:40px;">❌</p>
+        <p>Không tải được đơn hàng. Vui lòng thử lại.</p>
+      </div>
+    `;
+  }
+}
+
+function viewOrder(code) {
+  alert('Chi tiết đơn hàng: ' + code + '\n(Chức năng đang phát triển)');
+}
+
+function cancelOrder(code) {
+  if (confirm('Bạn có chắc muốn hủy đơn hàng ' + code + '?')) {
+    alert('Đã yêu cầu hủy đơn hàng ' + code);
+  }
+}
+
+// =====================================================
+// INIT
+// =====================================================
+loadUserInfo();
+loadOrders();
+</script>
+</body>
+</html>

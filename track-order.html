@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tra cứu đơn hàng — Keddy Pet Shop</title>
+  <link rel="stylesheet" href="css/Style.css">
+  <link rel="stylesheet" href="css/chatbot.css">
+  
+  <style>
+    .track-wrapper {
+      max-width: 680px;
+      margin: 40px auto;
+      padding: 0 20px 60px;
+    }
+    .track-box {
+      background: #fff;
+      border-radius: 18px;
+      border: 1.5px solid #ede8e0;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+    .track-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #2d2416;
+      margin-bottom: 8px;
+    }
+    .track-sub {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 24px;
+    }
+    .track-form { display: flex; flex-direction: column; gap: 14px; }
+    .track-form input {
+      width: 100%;
+      border: 2px solid #ede8e0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 15px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    .track-form input:focus { border-color: #e8974a; }
+    .track-btn {
+      background: linear-gradient(135deg, #e8974a, #d4761e);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .track-btn:hover { opacity: 0.9; }
+    .track-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .track-msg { font-size: 14px; text-align: center; margin-top: 4px; }
+    .track-msg.error { color: #e84a4a; }
+    .track-msg.success { color: #2e7d32; }
+
+    /* Result */
+    .result-box {
+      background: #fff;
+      border-radius: 18px;
+      border: 1.5px solid #ede8e0;
+      padding: 28px;
+      display: none;
+    }
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .result-code {
+      font-size: 18px;
+      font-weight: 800;
+      color: #e8974a;
+    }
+    .status-pill {
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .status-pending   { background: #fff3cd; color: #856404; }
+    .status-shipping  { background: #cce5ff; color: #004085; }
+    .status-done      { background: #d4edda; color: #155724; }
+    .status-cancelled { background: #f8d7da; color: #721c24; }
+
+    /* Timeline */
+    .timeline {
+      display: flex;
+      justify-content: space-between;
+      margin: 24px 0;
+      position: relative;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 10%;
+      right: 10%;
+      height: 3px;
+      background: #ede8e0;
+      z-index: 0;
+    }
+    .timeline-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+      flex: 1;
+    }
+    .timeline-dot {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #ede8e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 2px #ede8e0;
+    }
+    .timeline-dot.active {
+      background: #e8974a;
+      box-shadow: 0 0 0 2px #e8974a;
+    }
+    .timeline-dot.done {
+      background: #4caf50;
+      box-shadow: 0 0 0 2px #4caf50;
+    }
+    .timeline-dot.cancelled {
+      background: #e84a4a;
+      box-shadow: 0 0 0 2px #e84a4a;
+    }
+    .timeline-label {
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+      font-weight: 600;
+    }
+    .timeline-label.active { color: #e8974a; }
+    .timeline-label.done   { color: #4caf50; }
+
+    .info-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 20px; }
+    .info-table tr { border-bottom: 1px solid #f0ece6; }
+    .info-table td { padding: 10px 4px; }
+    .info-table td:first-child { color: #888; width: 40%; }
+    .info-table td:last-child { font-weight: 600; color: #2d2416; }
+
+    .items-title { font-size: 14px; font-weight: 700; color: #2d2416; margin: 16px 0 10px; }
+    .order-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0ece6;
+      font-size: 13px;
+    }
+    .order-item img {
+      width: 48px; height: 48px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #f8f5f0;
+      border: 1px solid #ede8e0;
+    }
+    .order-item-name { flex: 1; font-weight: 600; color: #2d2416; }
+    .order-item-name span { font-weight: 400; color: #888; display: block; }
+    .order-item-price { font-weight: 700; color: #e84a4a; }
+    .order-total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 0 0;
+      font-size: 16px;
+      font-weight: 800;
+    }
+    .order-total-row span:last-child { color: #e84a4a; }
+  </style>
+</head>
+<script>
+    const s = document.createElement('script');
+    s.src = 'js/livechat.js?v=' + Date.now();
+    s.defer = true;
+    document.head.appendChild(s);
+</script>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-img">🐾</div>
+      <span class="logo-text">Keddy</span>
+    </a>
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Tìm kiếm sản phẩm...">
+      <button id="search-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+    </div>
+    <div class="top-actions">
+      <div class="hotline">Hotline <span>123456789</span></div>
+      <a href="cart.html" class="top-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span>Giỏ Hàng</span>
+      </a>
+      <a href="#" class="top-btn" id="user-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span id="user-name">Đăng Nhập</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="breadcrumb">
+  <a href="index.html">🏠 Trang chủ</a>
+  <span>›</span>
+  <span>Tra cứu đơn hàng</span>
+</div>
+
+<div class="track-wrapper">
+  <div class="track-box">
+    <div class="track-title">🔍 Tra cứu đơn hàng</div>
+    <div class="track-sub">Nhập mã đơn hàng và số điện thoại để kiểm tra trạng thái</div>
+    <div class="track-form">
+      <input type="text" id="input-code" placeholder="Mã đơn hàng (VD: KD20240512xxxx)" maxlength="30">
+      <input type="tel"  id="input-phone" placeholder="Số điện thoại đặt hàng (VD: 0901234567)" maxlength="15">
+      <div id="track-msg" class="track-msg"></div>
+      <button class="track-btn" id="btn-track">🔍 Tra cứu ngay</button>
+    </div>
+  </div>
+
+  <!-- Kết quả -->
+  <div class="result-box" id="result-box">
+    <div class="result-header">
+      <div>
+        <div style="font-size:13px;color:#888;margin-bottom:4px;">Mã đơn hàng</div>
+        <div class="result-code" id="res-code"></div>
+      </div>
+      <div class="status-pill" id="res-status-pill"></div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline" id="res-timeline">
+      <div class="timeline-step" id="tl-pending">
+        <div class="timeline-dot">📋</div>
+        <div class="timeline-label">Chờ xử lý</div>
+      </div>
+      <div class="timeline-step" id="tl-shipping">
+        <div class="timeline-dot">🚚</div>
+        <div class="timeline-label">Đang giao</div>
+      </div>
+      <div class="timeline-step" id="tl-done">
+        <div class="timeline-dot">✅</div>
+        <div class="timeline-label">Hoàn thành</div>
+      </div>
+    </div>
+
+    <!-- Thông tin đơn -->
+    <table class="info-table">
+      <tr><td>Người nhận</td><td id="res-name"></td></tr>
+      <tr><td>Số điện thoại</td><td id="res-phone"></td></tr>
+      <tr><td>Địa chỉ giao</td><td id="res-address"></td></tr>
+      <tr><td>Thanh toán</td><td id="res-payment"></td></tr>
+      <tr><td>Ngày đặt</td><td id="res-date"></td></tr>
+      <tr><td>Ghi chú</td><td id="res-note"></td></tr>
+    </table>
+
+    <!-- Sản phẩm -->
+    <div class="items-title">🛒 Sản phẩm trong đơn</div>
+    <div id="res-items"></div>
+    <div class="order-total-row">
+      <span>Tổng cộng</span>
+      <span id="res-total"></span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-bottom">© 2025 Keddy Pet Shop.</div>
+</footer>
+
+<script>
+function escapeHTML(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Điền mã đơn từ URL nếu có (từ trang success)
+const urlParams = new URLSearchParams(location.search);
+if (urlParams.get('code'))  document.getElementById('input-code').value  = urlParams.get('code');
+if (urlParams.get('phone')) document.getElementById('input-phone').value = urlParams.get('phone');
+if (urlParams.get('code') && urlParams.get('phone')) trackOrder();
+document.getElementById('btn-track').addEventListener('click', trackOrder);
+document.getElementById('input-phone').addEventListener('keypress', e => {
+  if (e.key === 'Enter') trackOrder();
+});
+
+async function trackOrder() {
+  const code  = document.getElementById('input-code').value.trim();
+  const phone = document.getElementById('input-phone').value.trim();
+  const msg   = document.getElementById('track-msg');
+
+  if (!code || !phone) {
+    msg.className = 'track-msg error';
+    msg.textContent = 'Vui lòng nhập đầy đủ mã đơn và số điện thoại!';
+    return;
+  }
+
+  const btn = document.getElementById('btn-track');
+  btn.disabled = true;
+  btn.textContent = '⏳ Đang tìm...';
+  msg.textContent = '';
+
+  try {
+    const res  = await fetch(`api/track_order.php?order_code=${encodeURIComponent(code)}&phone=${encodeURIComponent(phone)}`);
+    const data = await res.json();
+
+    if (!data.success) {
+      msg.className = 'track-msg error';
+      msg.textContent = data.message;
+      document.getElementById('result-box').style.display = 'none';
+      return;
+    }
+
+    renderResult(data.data);
+  } catch (err) {
+    msg.className = 'track-msg error';
+    msg.textContent = 'Lỗi kết nối server!';
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🔍 Tra cứu ngay';
+}
+
+function renderResult(o) {
+  document.getElementById('result-box').style.display = 'block';
+  document.getElementById('result-box').scrollIntoView({ behavior: 'smooth' });
+
+  // Code + status
+  document.getElementById('res-code').textContent = '#' + o.order_code;
+
+  const statusMap = {
+    pending:   { label: 'Chờ xử lý',  cls: 'status-pending' },
+    shipping:  { label: 'Đang giao',  cls: 'status-shipping' },
+    done:      { label: 'Hoàn thành', cls: 'status-done' },
+    cancelled: { label: 'Đã hủy',     cls: 'status-cancelled' },
+    'Chờ xử lý':  { label: 'Chờ xử lý',  cls: 'status-pending' },
+    'Đang giao':  { label: 'Đang giao',  cls: 'status-shipping' },
+    'Hoàn thành': { label: 'Hoàn thành', cls: 'status-done' },
+    'Đã hủy':     { label: 'Đã hủy',     cls: 'status-cancelled' },
+  };
+  const st = statusMap[o.status] || { label: o.status, cls: 'status-pending' };
+  const pill = document.getElementById('res-status-pill');
+  pill.textContent = st.label;
+  pill.className = 'status-pill ' + st.cls;
+
+  // Timeline
+  const steps = ['tl-pending', 'tl-shipping', 'tl-done'];
+  const stepMap = { pending: 0, 'Chờ xử lý': 0, shipping: 1, 'Đang giao': 1, done: 2, 'Hoàn thành': 2 };
+  const activeStep = stepMap[o.status] ?? 0;
+  const isCancelled = o.status === 'cancelled' || o.status === 'Đã hủy';
+
+  steps.forEach((id, i) => {
+    const dot   = document.querySelector(`#${id} .timeline-dot`);
+    const label = document.querySelector(`#${id} .timeline-label`);
+    dot.className = 'timeline-dot';
+    label.className = 'timeline-label';
+    if (isCancelled) {
+      dot.className += ' cancelled';
+    } else if (i < activeStep) {
+      dot.className += ' done';
+      label.className += ' done';
+    } else if (i === activeStep) {
+      dot.className += ' active';
+      label.className += ' active';
+    }
+  });
+
+  // Info
+  document.getElementById('res-name').textContent    = o.customer_name || '—';
+  document.getElementById('res-phone').textContent   = o.customer_phone || '—';
+  document.getElementById('res-address').textContent = o.shipping_address || '—';
+  document.getElementById('res-note').textContent    = o.note || '—';
+  document.getElementById('res-date').textContent    = o.created_at ? new Date(o.created_at).toLocaleDateString('vi-VN') : '—';
+  const payMap = { cash: 'Tiền mặt khi nhận hàng', transfer: 'Chuyển khoản ngân hàng', momo: 'Ví MoMo' };
+  document.getElementById('res-payment').textContent = payMap[o.payment_method] || o.payment_method || '—';
+
+  // Items
+  const items = o.items || [];
+  document.getElementById('res-items').innerHTML = items.map(i => `
+    <div class="order-item">
+      <img src="${escapeHTML(i.product_image)}" alt="" onerror="this.src='images/placeholder.png'">
+      <div class="order-item-name">
+        ${escapeHTML(i.product_name)}
+        <span>x${i.quantity}${i.variant ? ' · ' + escapeHTML(i.variant) : ''}</span>
+      </div>
+      <div class="order-item-price">${Number(i.subtotal).toLocaleString('vi-VN')}đ</div>
+    </div>
+  `).join('');
+
+  document.getElementById('res-total').textContent = Number(o.total).toLocaleString('vi-VN') + 'đ';
+}
+
+// User session
+const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+const userBtn  = document.getElementById('user-btn');
+const userName = document.getElementById('user-name');
+if (currentUser) {
+  userName.textContent = currentUser.username;
+  userBtn.addEventListener('click', e => { e.preventDefault(); location.href = 'profile.html'; });
+} else {
+  userBtn.addEventListener('click', e => { e.preventDefault(); location.href = 'login.html'; });
+}
+
+document.getElementById('search-btn').addEventListener('click', () => {
+  const q = document.getElementById('search-input').value.trim();
+  if (q) location.href = 'products.html?search=' + encodeURIComponent(q);
+});
+</script>
+</body>
+</html>

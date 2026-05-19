@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Đăng nhập - Keddy</title>
+<link rel="stylesheet" href="/keddys/css/auth.css">
+</head>
+
+<body>
+
+<div class="box">
+    <a href="index.html" class="back-btn">← </a>
+    <h2>🐾 Đăng nhập</h2>
+
+    <form onsubmit="event.preventDefault(); login();">
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Mật khẩu" required>
+        <button type="submit">Đăng nhập</button>
+    </form>
+    <div class="link">
+    <a href="forgot.html">Quên mật khẩu?</a>
+</div>
+
+    <div class="link">
+        <a href="register.html">Chưa có tài khoản? Đăng ký</a>
+    </div>
+</div>
+
+<script>
+async function login() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value.trim();
+
+    if (!email || !password) {
+        alert("Nhập đầy đủ đi bro 😑");
+        return;
+    }
+
+    try {
+        const res = await fetch('api/login.php', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+    showNotify(
+                "Đăng nhập thành công 🎉\nChúc bạn mua sắm vui vẻ 🛒",
+                data.role === 'admin' ? "admin.html" : "index.html"
+            );
+
+    // LƯU USER VÀO LOCALSTORAGE
+    localStorage.setItem("user", JSON.stringify({
+        username: data.username,
+        role: data.role
+    }));
+
+    if (data.role === 'admin') {
+        window.location.href = "admin.html";
+    } else {
+        window.location.href = "index.html";
+    }
+} else {
+            alert(data.error);
+        }
+
+    } catch (e) {
+        alert("Lỗi server!");
+        console.error(e);
+    }
+}
+function showNotify(message, redirect = null) {
+    const box = document.getElementById("notify");
+    const text = document.getElementById("notify-text");
+
+    text.textContent = message;
+    box.style.display = "flex";
+
+    setTimeout(() => {
+        box.style.display = "none";
+        if (redirect) window.location.href = redirect;
+    }, 2000); // 2 giây
+}
+function showNotify(message, redirectUrl) {
+    const box = document.createElement("div");
+    box.innerText = message;
+
+    box.style.position = "fixed";
+    box.style.top = "50%";
+    box.style.left = "50%";
+    box.style.transform = "translate(-50%, -50%)";
+    box.style.background = "#ff7b00";
+    box.style.color = "#fff";
+    box.style.padding = "20px 30px";
+    box.style.borderRadius = "12px";
+    box.style.fontSize = "18px";
+    box.style.textAlign = "center";
+    box.style.whiteSpace = "pre-line";
+    box.style.boxShadow = "0 10px 30px rgba(0,0,0,0.2)";
+    box.style.zIndex = "9999";
+
+    document.body.appendChild(box);
+
+    setTimeout(() => {
+        box.remove();
+        if (redirectUrl) window.location.href = redirectUrl;
+    }, 2000);
+}
+</script>
+<div id="notify" class="notify">
+    <div class="notify-box">
+        <p id="notify-text"></p>
+    </div>
+</div>
+</body>
+</html>

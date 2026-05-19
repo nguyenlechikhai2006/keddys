@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vòng Quay May Mắn - Keddys</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="css/Style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="css/chatbot.css">
+    <style>
+        .wheel-page {
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 0 1rem 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .back-btn {
+            align-self: flex-start;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--blue-main);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            background: #fff;
+            border: 1.5px solid var(--blue-main);
+            padding: 7px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+        .back-btn:hover { background: var(--blue-main); color: #fff; }
+
+        .wheel-card {
+            background: #fff;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 2rem 1.5rem;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .wheel-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            text-align: center;
+        }
+        .wheel-title span { color: var(--blue-main); }
+
+        .wheel-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-mid);
+            text-align: center;
+            margin-top: -0.8rem;
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wheel-outer {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: var(--blue-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 24px rgba(26,95,212,0.25);
+        }
+
+        .wheel-canvas-wrap {
+            width: 304px;
+            height: 304px;
+            position: relative;
+        }
+
+        #wheelCanvas {
+            border-radius: 50%;
+            display: block;
+        }
+
+        .pointer {
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 28px solid var(--orange);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            z-index: 10;
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 44px;
+            height: 44px;
+            background: #fff;
+            border: 3px solid var(--blue-main);
+            border-radius: 50%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: var(--transition);
+        }
+        .wheel-center:hover { background: var(--blue-main); }
+
+        .spin-btn {
+            background: var(--blue-main);
+            color: #fff;
+            border: none;
+            padding: 0.85rem 2.5rem;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 16px rgba(26,95,212,0.3);
+            width: 100%;
+            max-width: 280px;
+        }
+        .spin-btn:hover { background: var(--blue-dark); transform: translateY(-1px); }
+        .spin-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+        .tries-info {
+            font-size: 0.82rem;
+            color: var(--text-mid);
+            text-align: center;
+        }
+        .tries-info span { color: var(--blue-main); font-weight: 700; }
+
+        .prizes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+        }
+
+        .prize-tag {
+            background: var(--gray-light);
+            border: 1.5px solid var(--gray-mid);
+            border-radius: var(--radius);
+            padding: 10px 8px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .prize-tag.highlighted {
+            border-color: var(--blue-main);
+            background: #e8f0fd;
+        }
+        .prize-tag-code {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--blue-main);
+        }
+        .prize-tag-val {
+            font-size: 0.68rem;
+            color: var(--text-mid);
+            margin-top: 2px;
+        }
+
+        /* History */
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--gray-light);
+            border: 1.5px solid var(--gray-mid);
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            gap: 12px;
+            width: 100%;
+        }
+        .history-item-info { flex: 1; }
+        .history-item-code {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--blue-main);
+            letter-spacing: 0.05em;
+        }
+        .history-item-val {
+            font-size: 0.75rem;
+            color: var(--text-mid);
+            margin-top: 2px;
+        }
+        .history-copy-btn {
+            background: var(--blue-main);
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--transition);
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+        .history-copy-btn:hover { background: var(--blue-dark); }
+
+        /* Result Modal */
+        .result-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        .result-overlay.show { display: flex; }
+
+        .result-card {
+            background: #fff;
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            max-width: 360px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+            animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        .result-emoji { font-size: 3rem; display: block; margin-bottom: 0.5rem; }
+        .result-head {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 0.4rem;
+        }
+
+        .result-codebox {
+            background: var(--gray-light);
+            border: 2px dashed var(--blue-main);
+            border-radius: var(--radius);
+            padding: 0.9rem 1.2rem;
+            margin: 1rem 0;
+            cursor: pointer;
+        }
+        .result-codelabel {
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+        .result-code {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--blue-main);
+            letter-spacing: 0.08em;
+        }
+        .result-copyhint { font-size: 0.68rem; color: var(--text-light); margin-top: 4px; }
+
+        .result-desc {
+            font-size: 0.85rem;
+            color: var(--text-mid);
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+        }
+        .result-desc strong { color: var(--text-dark); }
+
+        .result-expiry {
+            font-size: 0.72rem;
+            color: var(--text-light);
+            margin-bottom: 1.2rem;
+            background: var(--gray-light);
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .btn-close {
+            background: var(--blue-main);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 2rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transition);
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+        .btn-close:hover { background: var(--blue-dark); }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(60px);
+            background: var(--blue-main);
+            color: #fff;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            z-index: 300;
+            transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            white-space: nowrap;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 480px) {
+            .wheel-outer { width: 270px; height: 270px; }
+            .wheel-canvas-wrap { width: 256px; height: 256px; }
+            .prizes-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <a href="index.html" class="logo">
+            <div class="logo-img">🐾</div>
+            <span class="logo-text">Keddy</span>
+        </a>
+        <div class="search-bar">
+            <input type="text" placeholder="Tìm kiếm sản phẩm...">
+            <button>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+            </button>
+        </div>
+        <div class="top-actions">
+            <div class="hotline">Hotline <span>123456789</span></div>
+            <a href="admin.html" class="admin">
+                <i class="fa-solid fa-user-lock"></i>
+                <span>Admin</span>
+            </a>
+            <a href="cart.html" class="top-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                <span>Giỏ Hàng</span>
+            </a>
+            <a href="#" class="top-btn" id="user-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span id="user-name">Đăng Nhập</span>
+            </a>
+        </div>
+    </div>
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <div class="nav-item">
+                <div class="nav-link">☰ Menu <span class="arrow">▾</span></div>
+                <div class="mega-menu">
+                    <div class="menu-col">
+                        <div class="menu-col-title">Thức Ăn Cho Chó</div>
+                        <ul>
+                            <li><a href="products.html?cat=thuc-an-hat-cho">Thức Ăn Hạt</a></li>
+                            <li><a href="products.html?cat=thuc-an-uot-cho">Thức Ăn Ướt</a></li>
+                            <li><a href="products.html?cat=thuc-an-benh-cho">Thức Ăn Hỗ Trợ Điều Trị Bệnh</a></li>
+                            <li><a href="products.html?cat=thuc-an-huu-co-cho">Thức Ăn Hữu Cơ</a></li>
+                            <li><a href="products.html?cat=thuc-an-khong-ngu-coc-cho">Thức Ăn Không Ngũ Cốc</a></li>
+                        </ul>
+                    </div>
+                    <div class="menu-col">
+                        <div class="menu-col-title">Thức Ăn Cho Mèo</div>
+                        <ul>
+                            <li><a href="products.html?cat=thuc-an-hat-meo">Thức Ăn Hạt</a></li>
+                            <li><a href="products.html?cat=thuc-an-uot-meo">Thức Ăn Ướt</a></li>
+                            <li><a href="products.html?cat=thuc-an-benh-meo">Thức Ăn Điều Trị Bệnh</a></li>
+                            <li><a href="products.html?cat=banh-thuong-meo">Bánh Thưởng Mèo</a></li>
+                        </ul>
+                    </div>
+                    <div class="menu-col">
+                        <div class="menu-col-title">Phụ Kiện & Đồ Chơi</div>
+                        <ul>
+                            <li><a href="products.html?cat=do-choi">Đồ Chơi</a></li>
+                            <li><a href="products.html?cat=thoi-trang-quan-ao">Thời Trang - Quần Áo</a></li>
+                            <li><a href="products.html?cat=vong-co-day-dat">Vòng Cổ - Dây Dắt</a></li>
+                            <li><a href="products.html?cat=dung-cu-an-uong">Dụng Cụ Ăn Uống</a></li>
+                            <li><a href="products.html?cat=nem-chuong-cho-pet">Nệm - Chuồng Cho Pet</a></li>
+                        </ul>
+                    </div>
+                    <div class="menu-col">
+                        <div class="menu-col-title">Chăm Sóc Sức Khoẻ</div>
+                        <ul>
+                            <li><a href="products.html?cat=thuc-pham-chuc-nang">Thực Phẩm Chức Năng</a></li>
+                            <li><a href="products.html?cat=vitamin-bo-sung">Vitamin - Thực Phẩm Bổ Sung</a></li>
+                        </ul>
+                        <div class="menu-col-title" style="margin-top:16px">Vệ Sinh</div>
+                        <ul>
+                            <li><a href="products.html?cat=xit-khu-mui">Xịt Khử Mùi</a></li>
+                            <li><a href="products.html?cat=sua-tam">Sữa Tắm</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-link">🐶 Chó <span class="arrow">▾</span></div>
+                <div class="mega-menu">
+                    <div class="menu-col">
+                        <div class="menu-col-title">Thức Ăn Cho Chó</div>
+                        <ul>
+                            <li><a href="products.html?cat=thuc-an-hat-cho">Thức Ăn Hạt</a></li>
+                            <li><a href="products.html?cat=thuc-an-uot-cho">Thức Ăn Ướt</a></li>
+                            <li><a href="products.html?cat=thuc-an-benh-cho">Thức Ăn Hỗ Trợ Điều Trị Bệnh</a></li>
+                            <li><a href="products.html?cat=thuc-an-huu-co-cho">Thức Ăn Hữu Cơ</a></li>
+                            <li><a href="products.html?cat=thuc-an-khong-ngu-coc-cho">Thức Ăn Không Ngũ Cốc</a></li>
+                        </ul>
+                    </div>
+                    <div class="menu-col">
+                        <div class="menu-col-title">Phụ Kiện Cho Chó</div>
+                        <ul>
+                            <li><a href="products.html?cat=do-choi&pet=cho">Đồ Chơi Cho Chó</a></li>
+                            <li><a href="products.html?cat=thoi-trang-quan-ao&pet=cho">Thời Trang Cho Chó</a></li>
+                            <li><a href="products.html?cat=vong-co-day-dat&pet=cho">Vòng Cổ - Dây Dắt</a></li>
+                            <li><a href="products.html?cat=dung-cu-an-uong&pet=cho">Dụng Cụ Ăn Uống</a></li>
+                        </ul>
+                    </div>
+                    <div class="menu-col">
+                        <div class="menu-col-title">Chăm Sóc Chó</div>
+                        <ul>
+                            <li><a href="products.html?cat=sua-tam&pet=cho">Sữa Tắm Cho Chó</a></li>
+                            <li><a href="products.html?cat=xit-khu-mui&pet=cho">Xịt Khử Mùi</a></li>
+                            <li><a href="products.html?cat=vitamin-bo-sung&pet=cho">Vitamin Bổ Sung</a></li>
+                            <li><a href="products.html?cat=thuc-pham-chuc-nang&pet=cho">Thực Phẩm Chức Năng</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-link">🐱 Mèo <span class="arrow">▾</span></div>
+                <div class="mega-menu">
+                    <div class="menu-col">
+                        <div class="menu-col-title">Thức Ăn Cho Mèo</div>
+                        <ul>
+                            <li><a href="products.html?cat=thuc-an-hat-meo">Thức Ăn Hạt</a></li>
+                            <li><a href="products.html?cat=thuc-an-uot-meo">Thức Ăn Ướt</a></li>
+                            <li><a href="products.html?cat=thuc-an-benh-meo">Thức Ăn Điều Trị Bệnh</a></li>
+                            <li><a href="products.html?cat=banh-thuong-meo">Bánh Thưởng Mèo</a></li>
+                        </ul>
+                    </div>
+                    <div class="menu-col">
+                        <div class="menu-col-title">Phụ Kiện & Đồ Chơi</div>
+                        <ul>
+                            <li><a href="products.html?cat=do-choi&pet=meo">Đồ Chơi Cho Mèo</a></li>
+                            <li><a href="products.html?cat=thoi-trang-quan-ao&pet=meo">Thời Trang Cho Mèo</a></li>
+                            <li><a href="products.html?cat=vong-co-day-dat&pet=meo">Vòng Cổ - Dây Dắt</a></li>
+                            <li><a href="products.html?cat=nem-chuong-cho-pet&pet=meo">Nệm - Chuồng Cho Mèo</a></li>
+                        </ul>
+                    </div>
+                    <div class="menu-col">
+                        <div class="menu-col-title">Vệ Sinh Mèo</div>
+                        <ul>
+                            <li><a href="products.html?cat=xit-khu-mui&pet=meo">Xịt Khử Mùi</a></li>
+                            <li><a href="products.html?cat=sua-tam&pet=meo">Sữa Tắm Mèo</a></li>
+                            <li><a href="products.html?cat=vitamin-bo-sung&pet=meo">Vitamin Bổ Sung</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item">
+                <a href="products.html?filter=new" class="nav-link">🆕 Hàng mới về</a>
+            </div>
+            <div class="nav-item">
+                <div class="nav-link">🎀 Phụ kiện <span class="arrow">▾</span></div>
+                <div class="mega-menu">
+                    <div class="menu-col">
+                        <div class="menu-col-title">Phụ Kiện & Đồ Chơi</div>
+                        <ul>
+                            <li><a href="products.html?cat=do-choi">Đồ Chơi</a></li>
+                            <li><a href="products.html?cat=thoi-trang-quan-ao">Thời Trang - Quần Áo</a></li>
+                            <li><a href="products.html?cat=vong-co-day-dat">Vòng Cổ - Dây Dắt</a></li>
+                            <li><a href="products.html?cat=dung-cu-an-uong">Dụng Cụ Ăn Uống</a></li>
+                            <li><a href="products.html?cat=nem-chuong-cho-pet">Nệm - Chuồng Cho Pet</a></li>
+                        </ul>
+                    </div>
+                    <div class="menu-col">
+                        <div class="menu-col-title">Vệ Sinh</div>
+                        <ul>
+                            <li><a href="products.html?cat=xit-khu-mui">Xịt Khử Mùi</a></li>
+                            <li><a href="products.html?cat=sua-tam">Sữa Tắm</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item">
+                <a href="lucky-wheel.html" class="nav-link">🎡 Vòng quay may mắn</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- NỘI DUNG CHÍNH -->
+<div class="wheel-page">
+
+    <a href="index.html" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i> Quay về trang chủ
+    </a>
+
+    <div class="wheel-card">
+        <div class="wheel-title">🎡 Vòng Quay <span>May Mắn</span></div>
+        <div class="wheel-subtitle">Quay để nhận mã giảm giá hấp dẫn mỗi ngày!</div>
+
+        <div class="wheel-wrapper">
+            <div class="pointer"></div>
+            <div class="wheel-outer">
+                <div class="wheel-canvas-wrap">
+                    <canvas id="wheelCanvas" width="304" height="304"></canvas>
+                    <div class="wheel-center" onclick="spinWheel()">🎯</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="spin-btn" id="spinBtn" onclick="spinWheel()">🎰 Quay ngay!</button>
+        <div class="tries-info">Bạn còn <span id="triesLeft">3</span> lượt quay hôm nay</div>
+
+        <div class="prizes-grid" id="prizesGrid"></div>
+    </div>
+
+    <!-- Lịch sử mã đã nhận -->
+    <div class="wheel-card" id="historyCard" style="display:none">
+        <div class="wheel-title" style="font-size:1.1rem">🎟️ Mã giảm giá đã nhận hôm nay</div>
+        <div id="codeHistory" style="width:100%; display:flex; flex-direction:column; gap:10px;"></div>
+    </div>
+
+</div>
+
+<!-- Result Modal -->
+<div class="result-overlay" id="resultOverlay">
+    <div class="result-card">
+        <span class="result-emoji" id="resultEmoji">🎉</span>
+        <div class="result-head" id="resultHead"></div>
+        <div class="result-codebox" onclick="copyCode()" id="codeBox" style="display:none">
+            <div class="result-codelabel">Mã giảm giá của bạn</div>
+            <div class="result-code" id="resultCode"></div>
+            <div class="result-copyhint">Nhấn để sao chép</div>
+        </div>
+        <div class="result-desc" id="resultDesc"></div>
+        <div class="result-expiry" id="resultExpiry"></div>
+        <button class="btn-close" onclick="document.getElementById('resultOverlay').classList.remove('show')">Đóng</button>
+    </div>
+</div>
+
+<div class="toast" id="toast">✓ Đã sao chép mã!</div>
+
+<script>
+const PRIZES = [
+    { label:"GIẢM 30%",  code:"KEDDYS30",  value:"Giảm 30%",      color:"#e53e3e", textColor:"#fff", prob:3,  type:"percent", emoji:"🎊", desc:"Ưu đãi lớn! Giảm ngay <strong>30%</strong> cho toàn bộ đơn hàng." },
+    { label:"GIẢM 20%",  code:"KEDDYS20",  value:"Giảm 20%",      color:"#1a5fd4", textColor:"#fff", prob:8,  type:"percent", emoji:"🥳", desc:"Tuyệt vời! Giảm <strong>20%</strong> cho đơn hàng tiếp theo." },
+    { label:"Xui quá gà", code:null,        value:"Ui tiếc quá(gà).", color:"#718096", textColor:"#fff", prob:25, type:"luck", emoji:"🍀", desc:"Chúc bạn may mắn lần sau! Hãy thử lại nhé." },
+    { label:"GIẢM 10%",  code:"KEDDYS10",  value:"Giảm 10%",      color:"#38a169", textColor:"#fff", prob:17, type:"percent", emoji:"🎁", desc:"Giảm <strong>10%</strong> đơn hàng của bạn." },
+    { label:"GIẢM 50K",  code:"KEDDY50K",  value:"Giảm 50.000đ",  color:"#805ad5", textColor:"#fff", prob:8,  type:"fixed",   emoji:"💰", desc:"Voucher <strong>50.000đ</strong> cho đơn từ 200.000đ." },
+    { label:"FREE 100%", code:"KEDDY100%", value:"Miễn phí 100% đơn hàng", color:"#e91e8c", textColor:"#fff", prob:1, type:"percent", emoji:"🤩", desc:"Chúc mừng! Bạn được <strong>miễn phí 100% giá trị đơn hàng</strong> tiếp theo!" },
+    { label:"GIẢM 100K", code:"KEDDY100K", value:"Giảm 100.000đ", color:"#dd6b20", textColor:"#fff", prob:5,  type:"fixed",   emoji:"🤑", desc:"Voucher <strong>100.000đ</strong> cho đơn từ 500.000đ." },
+    { label:"HAHA hụt",  code:null,        value:"Hụt nhá",       color:"#718096", textColor:"#fff", prob:22, type:"luck",    emoji:"😅", desc:"Không có mã lần này. Còn lượt quay hãy thử lại!" },
+];
+
+const currentUserForWheel = JSON.parse(localStorage.getItem('user'));
+const wheelKey = currentUserForWheel ? currentUserForWheel.username : 'guest';
+
+let tries = parseInt(localStorage.getItem(`keddys_tries_${wheelKey}`) || '3');
+const today = new Date().toDateString();
+if (localStorage.getItem(`keddys_reset_${wheelKey}`) !== today) {
+    tries = 3;
+    localStorage.setItem(`keddys_reset_${wheelKey}`, today);
+    localStorage.removeItem(`keddys_history_${wheelKey}`);
+}
+let spinning = false, currentAngle = 0, currentCode = '';
+
+function saveTries() {
+    localStorage.setItem(`keddys_tries_${wheelKey}`, tries);  
+    localStorage.setItem(`keddys_reset_${wheelKey}`, today);  
+    document.getElementById('triesLeft').textContent = tries;
+    if (tries <= 0) {
+        const btn = document.getElementById('spinBtn');
+        btn.disabled = true;
+        btn.textContent = 'Hết lượt hôm nay';
+    }
+}
+
+function getExpiry() {
+    const d = new Date(); d.setDate(d.getDate() + 7);
+    return d.toLocaleDateString('vi-VN');
+}
+
+// ---- Lịch sử mã ----
+function saveToHistory(prize) {
+    if (prize.type === 'luck') return;
+    const list = JSON.parse(localStorage.getItem(`keddys_history_${wheelKey}`) || '[]');  
+    list.push({
+        code: prize.code,
+        value: prize.value,
+        time: new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'})
+    });
+    localStorage.setItem(`keddys_history_${wheelKey}`, JSON.stringify(list));  
+    renderHistory();
+}
+
+function renderHistory() {
+    const list = JSON.parse(localStorage.getItem(`keddys_history_${wheelKey}`) || '[]');
+    const card = document.getElementById('historyCard');
+    const container = document.getElementById('codeHistory');
+    
+    if (list.length === 0) { 
+        card.style.display = 'none'; 
+        return; 
+    }
+    
+    // ✅ Sửa: dùng 'flex' thay vì 'block' vì wheel-card dùng flex
+    card.style.display = 'flex';
+    card.style.flexDirection = 'column';  // ✅ thêm dòng này
+    
+    container.innerHTML = list.map(item => `
+        <div class="history-item">
+            <div class="history-item-info">
+                <div class="history-item-code">${item.code}</div>
+                <div class="history-item-val">${item.value} · Nhận lúc ${item.time}</div>
+            </div>
+            <button class="history-copy-btn" onclick="copyHistory('${item.code}')">📋 Sao chép</button>
+        </div>
+    `).join('');
+}
+
+function copyHistory(code) {
+    navigator.clipboard.writeText(code).catch(()=>{});
+    showToast();
+}
+
+function showToast() {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ---- Vòng quay ----
+function buildGrid() {
+    const grid = document.getElementById('prizesGrid');
+    PRIZES.forEach((p, i) => {
+        if (p.type === 'luck') return;
+        const el = document.createElement('div');
+        el.className = 'prize-tag'; el.id = 'prize-' + i;
+        el.innerHTML = `<div class="prize-tag-code">${p.code}</div><div class="prize-tag-val">${p.value}</div>`;
+        grid.appendChild(el);
+    });
+}
+
+function drawWheel(angle) {
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, cx = W/2, cy = W/2, r = W/2 - 3;
+    const total = PRIZES.reduce((s,p) => s+p.prob, 0);
+    ctx.clearRect(0, 0, W, W);
+    
+    // ✅ offset -Math.PI/2 để ô đầu tiên bắt đầu từ đỉnh (12 giờ)
+    let start = angle - Math.PI/2;
+    
+    PRIZES.forEach(p => {
+        const sweep = (p.prob/total)*Math.PI*2;
+        ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,start,start+sweep); ctx.closePath();
+        ctx.fillStyle = p.color; ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.save(); ctx.translate(cx,cy); ctx.rotate(start+sweep/2);
+        ctx.textAlign = 'right'; ctx.fillStyle = p.textColor;
+        ctx.font = 'bold 11px Be Vietnam Pro, sans-serif';
+        ctx.fillText(p.label, r - 10, 4);
+        ctx.restore();
+        start += sweep;
+    });
+    ctx.beginPath(); ctx.arc(cx,cy,22,0,Math.PI*2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.strokeStyle = '#1a5fd4'; ctx.lineWidth = 3; ctx.stroke();
+}
+
+function spinWheel() {
+    if (spinning || tries <= 0) return;
+    spinning = true;
+    document.getElementById('spinBtn').disabled = true;
+    tries--; saveTries();
+
+    const prizeIndex = pickPrize();
+    const total = PRIZES.reduce((s,p) => s+p.prob, 0);
+    
+    // Tính góc giữa ô được chọn
+    let angleToCenter = 0;
+    for (let i = 0; i < prizeIndex; i++) {
+        angleToCenter += (PRIZES[i].prob / total) * Math.PI * 2;
+    }
+    angleToCenter += (PRIZES[prizeIndex].prob / total) * Math.PI * 2 / 2;
+
+    // ✅ targetAngle tính từ 0, luôn dương, đủ vòng
+    const extraSpins = Math.PI * 2 * (5 + Math.floor(Math.random() * 3));
+    const targetAngle = extraSpins + (Math.PI * 2 - angleToCenter);
+
+    const duration = 4000 + Math.random() * 1500;
+    const startTime = performance.now();
+
+    // ✅ Reset currentAngle về 0 trước mỗi lần quay
+    const startAngle = 0;
+    currentAngle = 0;
+
+    function easeOut(t) { return 1 - Math.pow(1 - t, 4); }
+
+    function animate(now) {
+        const p = Math.min((now - startTime) / duration, 1);
+        currentAngle = startAngle + (targetAngle - startAngle) * easeOut(p);
+        drawWheel(currentAngle);
+        if (p < 1) {
+            requestAnimationFrame(animate);
+        } else {
+            currentAngle = targetAngle % (Math.PI * 2);
+            spinning = false;
+            if (tries > 0) document.getElementById('spinBtn').disabled = false;
+            showResult(PRIZES[prizeIndex], prizeIndex);
+        }
+    }
+    requestAnimationFrame(animate);
+}
+
+function showResult(prize, idx) {
+    document.getElementById('resultEmoji').textContent = prize.emoji;
+    document.getElementById('resultDesc').innerHTML = prize.desc;
+    if (prize.type !== 'luck') {
+        document.getElementById('resultHead').textContent = prize.value;
+        document.getElementById('codeBox').style.display = 'block';
+        document.getElementById('resultCode').textContent = prize.code;
+        document.getElementById('resultExpiry').textContent = '⏳ Hết hạn: ' + getExpiry();
+        currentCode = prize.code;
+        document.querySelectorAll('.prize-tag').forEach(el => el.classList.remove('highlighted'));
+        const el = document.getElementById('prize-'+idx);
+        if (el) el.classList.add('highlighted');
+        saveToHistory(prize);
+    } else {
+        document.getElementById('resultHead').textContent = 'Chúc mắm!';
+        document.getElementById('codeBox').style.display = 'none';
+        document.getElementById('resultExpiry').textContent = tries > 0 ? '✦ Bạn vẫn còn lượt quay khác!' : '';
+        currentCode = '';
+    }
+    document.getElementById('resultOverlay').classList.add('show');
+}
+
+function copyCode() {
+    if (!currentCode) return;
+    navigator.clipboard.writeText(currentCode).catch(()=>{});
+    showToast();
+}
+
+// ---- Dropdown navbar ----
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', function() {
+        const menu = this.parentElement.querySelector('.mega-menu');
+        if (!menu) return;
+        if (window.innerWidth < 900) {
+            const isOpen = menu.style.display === 'flex';
+            document.querySelectorAll('.mega-menu').forEach(m => m.style.display = 'none');
+            menu.style.display = isOpen ? 'none' : 'flex';
+        }
+    });
+});
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.nav-item')) {
+        document.querySelectorAll('.mega-menu').forEach(m => m.style.display = '');
+    }
+});
+
+// ---- Search ----
+document.querySelector('.search-bar input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        const q = this.value.trim();
+        if (q) location.href = `products.html?search=${encodeURIComponent(q)}`;
+    }
+});
+document.querySelector('.search-bar button').addEventListener('click', function() {
+    const q = document.querySelector('.search-bar input').value.trim();
+    if (q) location.href = `products.html?search=${encodeURIComponent(q)}`;
+});
+
+// ---- Tên đăng nhập ----
+const userBtn = document.getElementById('user-btn');
+const userName = document.getElementById('user-name');
+const currentUser = JSON.parse(localStorage.getItem('user'));
+if (currentUser) {
+    userName.textContent = currentUser.username;
+    userBtn.addEventListener('click', e => { e.preventDefault(); location.href = 'profile.html'; });
+} else {
+    userName.textContent = 'Đăng nhập';
+    userBtn.addEventListener('click', e => { e.preventDefault(); location.href = 'login.html'; });
+}
+
+// ---- Khởi động ----
+buildGrid();
+drawWheel(0);
+saveTries();
+renderHistory();
+if (tries > 0) document.getElementById('spinBtn').disabled = false;
+</script>
+</body>
+</html>

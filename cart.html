@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Giỏ Hàng - Keddy Pet Shop</title>
+  <link rel="stylesheet" href="css/cart.css"/>
+  <link rel="stylesheet" href="css/Style.css"/>
+  <link rel="stylesheet" href="css/chatbot.css">
+  <style>
+    .cart-loading { text-align: center; padding: 60px 20px; color: var(--text-mid); }
+    .cart-loading .spinner {
+      width: 48px; height: 48px;
+      border: 5px solid var(--gray-border);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty-cart { text-align: center; padding: 60px 20px; }
+    .empty-cart .empty-icon { font-size: 72px; margin-bottom: 16px; }
+    .empty-cart p { color: var(--text-mid); font-size: 16px; margin-bottom: 20px; }
+    .shop-btn { display: inline-block; background: var(--blue); color: var(--white); border-radius: 50px; padding: 12px 30px; font-weight: 800; text-decoration: none; font-size: 15px; transition: all .2s; }
+    .shop-btn:hover { background: var(--blue-dark); transform: translateY(-2px); }
+    #toast {
+      position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+      display: flex; align-items: center; gap: 12px;
+      background: var(--text-dark); color: #fff;
+      padding: 14px 22px; border-radius: 12px;
+      font-size: 14px; font-weight: 600;
+      box-shadow: 0 8px 32px rgba(0,0,0,.25);
+      transform: translateY(80px); opacity: 0;
+      transition: all .35s cubic-bezier(.34,1.56,.64,1);
+      pointer-events: none;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.success { background: var(--green); }
+    #toast.error   { background: var(--red); }
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.5); z-index: 1000;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 20px;
+      padding: 36px; width: 520px; max-width: 95vw;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 24px 80px rgba(0,0,0,.2);
+      animation: slideUp .35s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(30px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+    .modal-box h3 { font-family: 'Baloo 2', cursive; font-size: 22px; font-weight: 800; color: var(--blue); margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-weight: 700; font-size: 13px; margin-bottom: 6px; color: var(--text-mid); }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; border: 2px solid var(--gray-border); border-radius: 10px;
+      padding: 10px 14px; font-family: 'Nunito', sans-serif; font-size: 14px; outline: none;
+      box-sizing: border-box;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--blue); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .modal-total { background: var(--gray-bg); border-radius: 12px; padding: 14px 18px; margin: 20px 0; font-size: 15px; }
+    .modal-total .t-row { display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--text-mid); }
+    .modal-total .t-row.bold { font-weight: 800; color: var(--text-dark); font-size: 17px; }
+    .modal-total .t-row.bold span:last-child { color: var(--red); }
+    .modal-btns { display: flex; gap: 12px; margin-top: 20px; }
+    .btn-cancel { flex: 1; background: none; border: 2px solid var(--gray-border); border-radius: 50px; padding: 12px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; color: var(--text-mid); }
+    .btn-place { flex: 2; background: var(--yellow); border: none; border-radius: 50px; padding: 12px; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 15px; cursor: pointer; color: var(--blue-dark); transition: all .2s; }
+    .btn-place:hover:not(:disabled) { background: var(--yellow-dark); transform: translateY(-2px); }
+    .btn-place:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .order-success { text-align: center; padding: 20px 0; }
+    .order-success .success-icon { font-size: 64px; margin-bottom: 12px; }
+    .order-success h4 { font-size: 20px; font-weight: 800; color: var(--green); margin-bottom: 8px; }
+    .order-code-badge { display: inline-block; background: var(--blue); color: #fff; border-radius: 10px; padding: 8px 20px; font-weight: 700; font-size: 18px; letter-spacing: 2px; margin: 12px 0; }
+    .qty-input.updating { opacity: .5; }
+
+    /* ===== COUNTDOWN BANNER ===== */
+    #transferBanner {
+      margin-top: 12px;
+      padding: 16px;
+      border-radius: 14px;
+      text-align: center;
+      font-family: 'Nunito', sans-serif;
+      border: 2px solid #f0a500;
+      background: #fff8e1;
+      transition: all .4s ease;
+    }
+    #transferBanner.confirmed {
+      background: #e8f5e9;
+      border-color: #28a745;
+    }
+    #transferBanner.expired {
+      background: #fff3f3;
+      border-color: #e53935;
+    }
+    .countdown-ring {
+      position: relative;
+      width: 72px; height: 72px;
+      margin: 0 auto 12px;
+    }
+    .countdown-ring svg { transform: rotate(-90deg); }
+    .countdown-ring circle.bg { fill: none; stroke: #e0e0e0; stroke-width: 6; }
+    .countdown-ring circle.prog {
+      fill: none; stroke: #f0a500; stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 188.5;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear, stroke .3s;
+    }
+    .countdown-ring .num {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 900; color: #e67e00;
+    }
+    #btnConfirmPaid {
+      margin-top: 12px;
+      background: #28a745; color: #fff;
+      border: none; border-radius: 50px;
+      padding: 10px 28px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800; font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(40,167,69,.3);
+      transition: transform .15s, box-shadow .15s;
+    }
+    #btnConfirmPaid:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(40,167,69,.4); }
+  </style>
+</head>
+<script>
+    const s = document.createElement('script');
+    s.src = 'js/livechat.js?v=' + Date.now();
+    s.defer = true;
+    document.head.appendChild(s);
+</script>
+<body>
+
+<!-- HEADER -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-img">🐾</div>
+      <span class="logo-text">Keddy</span>
+    </a>
+    <div class="search-bar">
+      <input type="text" placeholder="Tìm kiếm sản phẩm...">
+      <button>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+    </div>
+    <div class="top-actions">
+      <div class="hotline">Hotline <span>123456789</span></div>
+      <a href="admin.html" class="admin"><span>Admin</span></a>
+      <a href="cart.html" class="top-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span>Giỏ Hàng (<span id="cartCount">0</span>)</span>
+      </a>
+      <a href="profile.html" class="top-btn" id="user-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span id="user-name">Đăng Nhập</span>
+      </a>
+    </div>
+  </div>
+  <nav class="navbar">
+    <div class="navbar-inner">
+
+        <div class="nav-item">
+            <div class="nav-link">☰ Menu <span class="arrow">▾</span></div>
+            <div class="mega-menu">
+                <div class="menu-col">
+                    <div class="menu-col-title">Thức Ăn Cho Chó</div>
+                    <ul>
+                        <li><a href="products.html?cat=thuc-an-hat-cho">Thức Ăn Hạt</a></li>
+                        <li><a href="products.html?cat=thuc-an-uot-cho">Thức Ăn Ướt</a></li>
+                        <li><a href="products.html?cat=thuc-an-benh-cho">Thức Ăn Hỗ Trợ Điều Trị Bệnh</a></li>
+                        <li><a href="products.html?cat=thuc-an-huu-co-cho">Thức Ăn Hữu Cơ</a></li>
+                        <li><a href="products.html?cat=thuc-an-khong-ngu-coc-cho">Thức Ăn Không Ngũ Cốc</a></li>
+                    </ul>
+                </div>
+                <div class="menu-col">
+                    <div class="menu-col-title">Thức Ăn Cho Mèo</div>
+                    <ul>
+                        <li><a href="products.html?cat=thuc-an-hat-meo">Thức Ăn Hạt</a></li>
+                        <li><a href="products.html?cat=thuc-an-uot-meo">Thức Ăn Ướt</a></li>
+                        <li><a href="products.html?cat=thuc-an-benh-meo">Thức Ăn Điều Trị Bệnh</a></li>
+                        <li><a href="products.html?cat=banh-thuong-meo">Bánh Thưởng Mèo</a></li>
+                    </ul>
+                </div>
+                <div class="menu-col">
+                    <div class="menu-col-title">Phụ Kiện & Đồ Chơi</div>
+                    <ul>
+                        <li><a href="products.html?cat=do-choi">Đồ Chơi</a></li>
+                        <li><a href="products.html?cat=thoi-trang-quan-ao">Thời Trang - Quần Áo</a></li>
+                        <li><a href="products.html?cat=vong-co-day-dat">Vòng Cổ - Dây Dắt</a></li>
+                        <li><a href="products.html?cat=dung-cu-an-uong">Dụng Cụ Ăn Uống</a></li>
+                        <li><a href="products.html?cat=nem-chuong-cho-pet">Nệm - Chuồng Cho Pet</a></li>
+                    </ul>
+                </div>
+                <div class="menu-col">
+                    <div class="menu-col-title">Chăm Sóc Sức Khoẻ</div>
+                    <ul>
+                        <li><a href="products.html?cat=thuc-pham-chuc-nang">Thực Phẩm Chức Năng</a></li>
+                        <li><a href="products.html?cat=vitamin-bo-sung">Vitamin - Thực Phẩm Bổ Sung</a></li>
+                    </ul>
+                    <div class="menu-col-title" style="margin-top:16px">Vệ Sinh</div>
+                    <ul>
+                        <li><a href="products.html?cat=xit-khu-mui">Xịt Khử Mùi</a></li>
+                        <li><a href="products.html?cat=sua-tam">Sữa Tắm</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-link">🐶 Chó <span class="arrow">▾</span></div>
+            <div class="mega-menu">
+                <div class="menu-col">
+                    <div class="menu-col-title">Thức Ăn Cho Chó</div>
+                    <ul>
+                        <li><a href="products.html?cat=thuc-an-hat-cho">Thức Ăn Hạt</a></li>
+                        <li><a href="products.html?cat=thuc-an-uot-cho">Thức Ăn Ướt</a></li>
+                        <li><a href="products.html?cat=thuc-an-benh-cho">Thức Ăn Hỗ Trợ Điều Trị Bệnh</a></li>
+                        <li><a href="products.html?cat=thuc-an-huu-co-cho">Thức Ăn Hữu Cơ</a></li>
+                        <li><a href="products.html?cat=thuc-an-khong-ngu-coc-cho">Thức Ăn Không Ngũ Cốc</a></li>
+                    </ul>
+                </div>
+                <div class="menu-col">
+                    <div class="menu-col-title">Phụ Kiện Cho Chó</div>
+                    <ul>
+                        <li><a href="products.html?cat=do-choi&pet=cho">Đồ Chơi Cho Chó</a></li>
+                        <li><a href="products.html?cat=thoi-trang-quan-ao&pet=cho">Thời Trang Cho Chó</a></li>
+                        <li><a href="products.html?cat=vong-co-day-dat&pet=cho">Vòng Cổ - Dây Dắt</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-link">🐱 Mèo <span class="arrow">▾</span></div>
+            <div class="mega-menu">
+                <div class="menu-col">
+                    <div class="menu-col-title">Thức Ăn Cho Mèo</div>
+                    <ul>
+                        <li><a href="products.html?cat=thuc-an-hat-meo">Thức Ăn Hạt</a></li>
+                        <li><a href="products.html?cat=thuc-an-uot-meo">Thức Ăn Ướt</a></li>
+                        <li><a href="products.html?cat=thuc-an-benh-meo">Thức Ăn Điều Trị Bệnh</a></li>
+                        <li><a href="products.html?cat=banh-thuong-meo">Bánh Thưởng Mèo</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <a href="products.html?filter=new" class="nav-link">🆕 Hàng mới về</a>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-link">🎀 Phụ kiện <span class="arrow">▾</span></div>
+            <div class="mega-menu">
+                <div class="menu-col">
+                    <div class="menu-col-title">Phụ Kiện & Đồ Chơi</div>
+                    <ul>
+                        <li><a href="products.html?cat=do-choi">Đồ Chơi</a></li>
+                        <li><a href="products.html?cat=thoi-trang-quan-ao">Thời Trang - Quần Áo</a></li>
+                        <li><a href="products.html?cat=vong-co-day-dat">Vòng Cổ - Dây Dắt</a></li>
+                        <li><a href="products.html?cat=dung-cu-an-uong">Dụng Cụ Ăn Uống</a></li>
+                        <li><a href="products.html?cat=nem-chuong-cho-pet">Nệm - Chuồng Cho Pet</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <a href="lucky-wheel.html" class="nav-link">🎡 Vòng quay may mắn</a>
+        </div>
+
+    </div>
+</nav>
+</header>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="index.html">Trang chủ</a> › <span>Giỏ hàng</span>
+</div>
+
+<!-- MAIN -->
+<main class="cart-main">
+  <div class="cart-section">
+    <h2>🛒 Giỏ hàng của bạn</h2>
+    <div id="cartContent">
+      <div class="cart-loading">
+        <div class="spinner"></div>
+        <p>Đang tải giỏ hàng...</p>
+      </div>
+    </div>
+  </div>
+
+  <aside>
+    <div class="summary-card">
+      <h3>📋 Tóm tắt đơn hàng</h3>
+      <div class="summary-row"><span>Tạm tính</span><span id="subTotal">0 ₫</span></div>
+      <div class="summary-row"><span>Phí vận chuyển</span><span style="color:var(--green);font-weight:700;">Miễn phí</span></div>
+      <div class="summary-row"><span>Giảm giá</span><span id="discountDisplay">0 ₫</span></div>
+      <div class="coupon-group">
+        <input type="text" id="couponInput" placeholder="Nhập mã giảm giá..."/>
+        <button class="coupon-btn" onclick="applyCoupon()">Áp dụng</button>
+      </div>
+      <div class="summary-row total">
+        <span>Tổng cộng</span>
+        <span id="totalPrice">0 ₫</span>
+      </div>
+      <button class="checkout-btn" onclick="openCheckout()">
+        💳 THANH TOÁN NGAY
+      </button>
+      <div class="payment-icons">
+        <span class="payment-icon">💵 Tiền mặt</span>
+        <span class="payment-icon">🏦 Chuyển khoản</span>
+        <span class="payment-icon">💳 Thẻ</span>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkoutModal">
+  <div class="modal-box" id="modalContent">
+    <h3>📦 Thông tin giao hàng</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Họ và tên *</label>
+        <input type="text" id="ckName" placeholder="Nguyễn Văn A"/>
+      </div>
+      <div class="form-group">
+        <label>Số điện thoại *</label>
+        <input type="text" id="ckPhone" placeholder="0901234567"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="ckEmail" placeholder="email@example.com"/>
+    </div>
+    <div class="form-group">
+      <label>Địa chỉ giao hàng *</label>
+      <input type="text" id="ckAddress" placeholder="Số nhà, tên đường, Quận/Huyện, Tỉnh/TP"/>
+    </div>
+
+    <!-- PHƯƠNG THỨC THANH TOÁN -->
+    <div class="form-group">
+      <label>Phương thức thanh toán</label>
+      <select id="ckPayment">
+        <option value="cash">💵 Tiền mặt khi nhận hàng (COD)</option>
+        <option value="transfer">🏦 Chuyển khoản ngân hàng</option>
+      </select>
+    </div>
+
+    <!-- KHU VỰC QR (ẩn mặc định) -->
+    <div id="qrSection" style="display:none; margin-top:14px;">
+      <!-- Tab chọn ví -->
+      <div style="display:flex; gap:10px; justify-content:center; margin-bottom:14px;">
+        <button type="button" class="qr-tab" data-qr="momo" onclick="showQR('momo', this)"
+          style="flex:1; padding:10px; border-radius:10px; border:2px solid #ae2070; background:#fff; cursor:pointer; font-weight:700; color:#ae2070; font-family:Nunito,sans-serif;">
+          💜 MoMo
+        </button>
+        <button type="button" class="qr-tab" data-qr="mb" onclick="showQR('mb', this)"
+          style="flex:1; padding:10px; border-radius:10px; border:2px solid #ccc; background:#fff; cursor:pointer; font-weight:700; color:#555; font-family:Nunito,sans-serif;">
+          🏦 MB Bank
+        </button>
+        <button type="button" class="qr-tab" data-qr="zalopay" onclick="showQR('zalopay', this)"
+          style="flex:1; padding:10px; border-radius:10px; border:2px solid #ccc; background:#fff; cursor:pointer; font-weight:700; color:#555; font-family:Nunito,sans-serif;">
+          💙 ZaloPay
+        </button>
+      </div>
+
+      <!-- QR MoMo -->
+      <div id="qr-momo" class="qr-panel" style="text-align:center; padding:16px; background:#fff0f7; border-radius:12px; border:2px dashed #ae2070;">
+        <p style="font-weight:800; color:#ae2070; margin-bottom:10px;">💜 Quét QR MoMo</p>
+        <img src="anh/qr-momo.png" alt="QR MoMo" style="width:100%; max-width:320px; border-radius:10px; border:2px solid #f0a0c8; object-fit:contain;"/>
+        <p style="margin-top:10px; font-size:13px; color:#888;">* Ghi nội dung: <strong>Tên + SĐT</strong></p>
+      </div>
+
+      <!-- QR MB Bank -->
+      <div id="qr-mb" class="qr-panel" style="display:none; text-align:center; padding:16px; background:#f0f4ff; border-radius:12px; border:2px dashed #1a56a0;">
+        <p style="font-weight:800; color:#1a56a0; margin-bottom:10px;">🏦 Quét QR MB Bank</p>
+        <img src="anh/qr-mb.png" alt="QR MB Bank" style="width:100%; max-width:320px; border-radius:10px; border:2px solid #a0b8f0; object-fit:contain;"/>
+        <p style="margin-top:10px; font-size:13px; color:#888;">* Ghi nội dung: <strong>Tên + SĐT</strong></p>
+      </div>
+
+      <!-- QR ZaloPay -->
+      <div id="qr-zalopay" class="qr-panel" style="display:none; text-align:center; padding:16px; background:#f0f8ff; border-radius:12px; border:2px dashed #0068ff;">
+        <p style="font-weight:800; color:#0068ff; margin-bottom:10px;">💙 Quét QR ZaloPay</p>
+        <img src="anh/qr-zalopay.png" alt="QR ZaloPay" style="width:100%; max-width:320px; border-radius:10px; border:2px solid #80b8ff; object-fit:contain;"/>
+        <p style="margin-top:10px; font-size:13px; color:#888;">* Ghi nội dung: <strong>Tên + SĐT</strong></p>
+      </div>
+
+      <!-- BANNER ĐẾM NGƯỢC — tự điền vào đây bằng JS -->
+      <div id="transferBanner"></div>
+    </div>
+
+    <div class="form-group" style="margin-top:16px;">
+      <label>Ghi chú</label>
+      <textarea id="ckNote" rows="2" placeholder="Ghi chú cho đơn hàng (tuỳ chọn)..."></textarea>
+    </div>
+    <div class="modal-total" id="modalTotal"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeCheckout()">← Quay lại</button>
+      <button class="btn-place" id="btnPlace" onclick="placeOrder()">✅ Xác nhận đặt hàng</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="footer-logo"><div class="footer-logo-icon">🐾</div></div>
+      <p class="footer-desc">Keddy Pet Shop - Thiên đường cho thú cưng của bạn.</p>
+      <div class="social-links">
+        <a href="#">f</a><a href="#">ig</a><a href="#">yt</a><a href="#">tt</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Danh Mục</h4>
+      <ul class="sidebar-list">
+        <li><a href="products.html">Tất cả sản phẩm</a></li>
+        <li><a href="products.html?pet=cho">Thức ăn cho chó</a></li>
+        <li><a href="products.html?pet=meo">Thức ăn cho mèo</a></li>
+        <li><a href="products.html?cat=phu-kien">Phụ kiện thú cưng</a></li>
+        <li><a href="products.html?filter=new">Hàng mới về</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Chính Sách</h4>
+      <ul class="sidebar-list">
+        <li><a href="#">Chính sách bảo mật</a></li>
+        <li><a href="#">Chính sách đổi trả</a></li>
+        <li><a href="#">Quy định sử dụng</a></li>
+        <li><a href="#">Hướng dẫn mua hàng</a></li>
+      </ul>
+    </div>
+    <div class="footer-col footer-contact">
+      <h4>Liên Hệ</h4>
+      <p>📍 123 Đường ABC, Quận X, TP. HCM</p>
+      <p>📞 <strong>Hotline: 123 456 789</strong></p>
+      <p>📧 Email: support@keddy.vn</p>
+      <p>🕐 T2 - CN: 08:00 – 21:00</p>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2025 Keddy Pet Shop. Thiết kế bởi Keddy Team.</div>
+</footer>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const API = 'api/cart.php';
+const FETCH_OPTS = {
+  credentials: 'include',
+  headers: { 'Content-Type': 'application/json' }
+};
+
+let cartData       = { items: [], subtotal: 0, total: 0, count: 0 };
+let appliedCoupon  = null;
+let discountAmount = 0;
+
+// ---- Helpers ----
+function fmt(n) { return Number(n).toLocaleString('vi-VN') + ' ₫'; }
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = (type === 'success' ? '✅ ' : '❌ ') + msg;
+  t.className   = 'show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = ''; }, 3500);
+}
+
+// ============================================================
+// LOAD GIỎ HÀNG
+// ============================================================
+async function loadCart() {
+  try {
+    const res  = await fetch(API + '?action=get', { credentials: 'include' });
+    const data = await res.json();
+    if (data.success) { cartData = data; renderCart(); updateSummary(); }
+    else showCartError(data.message || 'Không tải được giỏ hàng');
+  } catch (err) {
+    console.error('Lỗi loadCart:', err);
+    showCartError('Không kết nối được server. Hãy kiểm tra XAMPP đang chạy.');
+  }
+}
+
+function showCartError(msg) {
+  document.getElementById('cartContent').innerHTML = `
+    <div class="empty-cart">
+      <div class="empty-icon">⚠️</div>
+      <p>${msg}</p>
+      <a href="products.html" class="shop-btn">🛍 Khám phá sản phẩm</a>
+    </div>`;
+}
+
+// ============================================================
+// RENDER GIỎ HÀNG
+// ============================================================
+function renderCart() {
+  const wrap = document.getElementById('cartContent');
+  document.getElementById('cartCount').textContent = cartData.count || 0;
+
+  if (!cartData.items || cartData.items.length === 0) {
+    wrap.innerHTML = `
+      <div class="empty-cart">
+        <div class="empty-icon">🛒</div>
+        <p>Giỏ hàng của bạn đang trống!</p>
+        <a href="products.html" class="shop-btn">🛍 Khám phá sản phẩm</a>
+      </div>`;
+    return;
+  }
+
+  const rows = cartData.items.map(item => `
+    <tr data-cart-id="${item.cart_id}">
+      <td>
+        <div class="product-cell">
+          <img src="${item.image || 'https://placehold.co/70x70/E8F5E9/43A047?text=🐾'}"
+               class="product-img" alt="${item.name}"
+               onerror="this.src='https://placehold.co/70x70/E8F5E9/43A047?text=🐾'"/>
+          <div>
+            <div class="product-name">${item.name}</div>
+            <div class="product-variant">${item.variant || ''}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="price-col">${fmt(item.price)}</span></td>
+      <td>
+        <div class="qty-control">
+          <button class="qty-btn" onclick="changeQty(${item.cart_id}, -1)">−</button>
+          <input class="qty-input" id="qty${item.cart_id}" type="number"
+                 value="${item.quantity}" min="1" max="${item.stock}"
+                 onchange="updateQty(${item.cart_id})"/>
+          <button class="qty-btn" onclick="changeQty(${item.cart_id}, 1)">+</button>
+        </div>
+      </td>
+      <td><span class="price-col" id="subtotal${item.cart_id}">${fmt(item.subtotal)}</span></td>
+      <td><button class="remove-btn" onclick="removeItem(${item.cart_id})" title="Xóa">✕</button></td>
+    </tr>`).join('');
+
+  wrap.innerHTML = `
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Sản phẩm</th><th>Đơn giá</th>
+          <th>Số lượng</th><th>Thành tiền</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="cartTableBody">${rows}</tbody>
+    </table>
+    <div class="cart-footer">
+      <a href="products.html" class="continue-btn">← Tiếp tục mua sắm</a>
+      <button class="clear-btn" onclick="clearCart()">🗑 Xóa giỏ hàng</button>
+    </div>`;
+}
+
+function updateSummary() {
+  const sub   = cartData.subtotal || 0;
+  const final = Math.max(0, sub - discountAmount);
+  document.getElementById('subTotal').textContent       = fmt(sub);
+  document.getElementById('totalPrice').textContent     = fmt(final);
+  document.getElementById('discountDisplay').textContent =
+    discountAmount > 0 ? '−' + fmt(discountAmount) : '0 ₫';
+}
+
+// ============================================================
+// THAY ĐỔI SỐ LƯỢNG
+// ============================================================
+function changeQty(cartId, delta) {
+  const input = document.getElementById('qty' + cartId);
+  let val = parseInt(input.value) + delta;
+  if (val < 1) val = 1;
+  if (val > parseInt(input.max || 9999)) val = parseInt(input.max || 9999);
+  input.value = val;
+  updateQty(cartId);
+}
+
+async function updateQty(cartId) {
+  const input = document.getElementById('qty' + cartId);
+  const qty   = parseInt(input.value) || 1;
+  input.classList.add('updating');
+  const item = cartData.items.find(i => i.cart_id == cartId);
+  if (item) {
+    item.quantity = qty;
+    item.subtotal = item.price * qty;
+    document.getElementById('subtotal' + cartId).textContent = fmt(item.subtotal);
+    cartData.subtotal = cartData.items.reduce((s, i) => s + i.subtotal, 0);
+    cartData.total    = cartData.subtotal;
+    updateSummary();
+  }
+  try {
+    const res  = await fetch(API, {
+      method: 'POST', ...FETCH_OPTS,
+      body: JSON.stringify({ action: 'update', cart_id: cartId, quantity: qty })
+    });
+    const data = await res.json();
+    if (data.success) { cartData.subtotal = data.subtotal; cartData.total = data.total; updateSummary(); }
+  } catch (e) { console.warn('updateQty offline:', e.message); }
+  finally { input.classList.remove('updating'); }
+}
+
+// ============================================================
+// XÓA SẢN PHẨM
+// ============================================================
+async function removeItem(cartId) {
+  const row = document.querySelector(`tr[data-cart-id="${cartId}"]`);
+  if (row) { row.style.opacity = '0.4'; row.style.pointerEvents = 'none'; }
+  try {
+    const res  = await fetch(API, { method: 'POST', ...FETCH_OPTS, body: JSON.stringify({ action: 'remove', cart_id: cartId }) });
+    const data = await res.json();
+    if (data.success) { cartData.items = data.items; cartData.subtotal = data.subtotal; cartData.total = data.total; cartData.count = data.count; }
+  } catch (e) {
+    cartData.items    = cartData.items.filter(i => i.cart_id != cartId);
+    cartData.subtotal = cartData.items.reduce((s, i) => s + i.subtotal, 0);
+    cartData.total    = cartData.subtotal;
+    cartData.count    = cartData.items.length;
+  }
+  renderCart(); updateSummary();
+  showToast('Đã xóa sản phẩm khỏi giỏ hàng');
+}
+
+// ============================================================
+// XÓA TOÀN BỘ GIỎ
+// ============================================================
+async function clearCart() {
+  if (!confirm('Xóa tất cả sản phẩm khỏi giỏ hàng?')) return;
+  try { await fetch(API, { method: 'POST', ...FETCH_OPTS, body: JSON.stringify({ action: 'clear' }) }); } catch (e) {}
+  cartData = { items: [], count: 0, subtotal: 0, total: 0 };
+  discountAmount = 0; appliedCoupon = null;
+  renderCart(); updateSummary();
+  showToast('Đã xóa toàn bộ giỏ hàng');
+}
+
+// ============================================================
+// MÃ GIẢM GIÁ
+// ============================================================
+async function applyCoupon() {
+  const code = document.getElementById('couponInput').value.trim();
+  if (!code) { showToast('Vui lòng nhập mã giảm giá', 'error'); return; }
+  try {
+    const res  = await fetch(API, { method: 'POST', ...FETCH_OPTS, body: JSON.stringify({ action: 'coupon', code, subtotal: cartData.subtotal }) });
+    const data = await res.json();
+    if (data.success) { discountAmount = data.discount; appliedCoupon = data.coupon; updateSummary(); showToast(data.message); }
+    else showToast(data.message, 'error');
+  } catch (e) { showToast('Không kết nối được server', 'error'); }
+}
+
+// ============================================================
+// QR — HIỆN / ẨN & TAB
+// ============================================================
+function showQR(type, btn) {
+  document.querySelectorAll('.qr-panel').forEach(p => p.style.display = 'none');
+  document.getElementById('qr-' + type).style.display = 'block';
+  const colors = { momo: '#ae2070', mb: '#1a56a0', zalopay: '#0068ff' };
+  document.querySelectorAll('.qr-tab').forEach(t => { t.style.borderColor = '#ccc'; t.style.color = '#555'; });
+  if (btn) { btn.style.borderColor = colors[type]; btn.style.color = colors[type]; }
+}
+
+// ============================================================
+// CHECKOUT MODAL — BIẾN TRẠNG THÁI
+// ============================================================
+let transferConfirmed = false;
+let countdownTimer    = null;
+const COUNTDOWN_SEC   = 60;
+
+function openCheckout() {
+  if (!cartData.items || cartData.items.length === 0) {
+    showToast('Giỏ hàng đang trống!', 'error'); return;
+  }
+  // Reset trạng thái mỗi lần mở
+  transferConfirmed = false;
+  clearInterval(countdownTimer);
+  resetPlaceBtn();
+  document.getElementById('qrSection').style.display = 'none';
+  document.getElementById('transferBanner').innerHTML = '';
+  updateModalTotal();
+  document.getElementById('checkoutModal').classList.add('open');
+}
+
+function closeCheckout() {
+  clearInterval(countdownTimer);
+  document.getElementById('checkoutModal').classList.remove('open');
+}
+
+function updateModalTotal() {
+  const sub   = cartData.subtotal;
+  const disc  = discountAmount;
+  const total = Math.max(0, sub - disc);
+  document.getElementById('modalTotal').innerHTML = `
+    <div class="t-row"><span>Tạm tính</span><span>${fmt(sub)}</span></div>
+    <div class="t-row"><span>Phí vận chuyển</span><span style="color:var(--green)">Miễn phí</span></div>
+    ${disc > 0 ? `<div class="t-row"><span>Giảm giá (${appliedCoupon})</span><span style="color:var(--red)">−${fmt(disc)}</span></div>` : ''}
+    <div class="t-row bold"><span>Tổng cộng</span><span>${fmt(total)}</span></div>`;
+}
+
+function resetPlaceBtn() {
+  const btn = document.getElementById('btnPlace');
+  btn.disabled      = false;
+  btn.textContent   = '✅ Xác nhận đặt hàng';
+  btn.style.background = '';
+  btn.style.color      = '';
+}
+
+// ============================================================
+// KHI ĐỔI PHƯƠNG THỨC THANH TOÁN
+// ============================================================
+document.getElementById('ckPayment').addEventListener('change', function () {
+  const isTransfer = this.value === 'transfer';
+  document.getElementById('qrSection').style.display = isTransfer ? 'block' : 'none';
+
+  if (isTransfer) {
+    transferConfirmed = false;
+    // Hiện tab momo mặc định
+    showQR('momo', document.querySelector('.qr-tab[data-qr="momo"]'));
+    startCountdown();
+  } else {
+    clearInterval(countdownTimer);
+    transferConfirmed = true;
+    document.getElementById('transferBanner').innerHTML = '';
+    resetPlaceBtn();
+  }
+});
+
+// ============================================================
+// ĐẾM NGƯỢC
+// ============================================================
+function startCountdown() {
+  clearInterval(countdownTimer);
+  transferConfirmed = false;
+
+  // Khoá nút đặt hàng
+  const btn = document.getElementById('btnPlace');
+  btn.disabled    = true;
+  btn.style.background = '#aaa';
+  btn.style.color      = '#fff';
+  btn.textContent = '⏳ Vui lòng quét QR trước';
+
+  const banner = document.getElementById('transferBanner');
+  banner.className = '';
+  banner.style.cssText = '';
+
+  let seconds = COUNTDOWN_SEC;
+  const circumference = 188.5; // 2 * π * 30
+
+  banner.innerHTML = `
+    <div style="font-size:13px; font-weight:700; color:#e67e00; margin-bottom:8px;">
+      ⏳ Quét mã và chuyển khoản trong thời gian sau:
+    </div>
+    <div class="countdown-ring">
+      <svg width="72" height="72" viewBox="0 0 72 72">
+        <circle class="bg" cx="36" cy="36" r="30"/>
+        <circle class="prog" id="cdCircle" cx="36" cy="36" r="30"
+          stroke-dasharray="${circumference}" stroke-dashoffset="0"/>
+      </svg>
+      <div class="num" id="cdNum">${seconds}</div>
+    </div>
+    <div style="font-size:13px; color:#777; margin-bottom:10px;">giây còn lại</div>
+    <button id="btnConfirmPaid" onclick="confirmPaid()">
+      ✅ Tôi đã chuyển khoản xong
+    </button>
+  `;
+
+  function tick() {
+    seconds--;
+    const numEl    = document.getElementById('cdNum');
+    const circleEl = document.getElementById('cdCircle');
+    if (!numEl) { clearInterval(countdownTimer); return; }
+
+    numEl.textContent = seconds;
+    // Tiến độ vòng tròn
+    const offset = circumference * (1 - seconds / COUNTDOWN_SEC);
+    circleEl.style.strokeDashoffset = offset;
+    // Đổi màu khi gần hết
+    if (seconds <= 10) circleEl.style.stroke = '#e53935';
+    else if (seconds <= 20) circleEl.style.stroke = '#f0a500';
+
+    if (seconds <= 0) {
+      clearInterval(countdownTimer);
+      if (!transferConfirmed) showExpired();
+    }
+  }
+
+  countdownTimer = setInterval(tick, 1000);
+}
+
+function showExpired() {
+  const banner = document.getElementById('transferBanner');
+  banner.className = 'expired';
+  banner.innerHTML = `
+    <div style="font-size:15px; font-weight:800; color:#e53935;">⏰ Hết thời gian!</div>
+    <div style="font-size:13px; color:#777; margin:8px 0;">Bạn chưa xác nhận chuyển khoản.</div>
+    <button onclick="startCountdown()"
+      style="background:#1a56a0; color:#fff; border:none; border-radius:50px;
+             padding:10px 24px; font-family:Nunito,sans-serif; font-weight:800;
+             font-size:14px; cursor:pointer; margin-top:4px;">
+      🔄 Thử lại (60s)
+    </button>
+  `;
+}
+
+function confirmPaid() {
+  clearInterval(countdownTimer);
+  transferConfirmed = true;
+
+  // Banner chuyển xanh
+  const banner = document.getElementById('transferBanner');
+  banner.className = 'confirmed';
+  banner.innerHTML = `
+    <div style="font-size:18px; font-weight:900; color:#28a745;">✅ Đã xác nhận chuyển khoản!</div>
+    <div style="font-size:13px; color:#555; margin-top:6px;">
+      Bấm <strong>"Xác nhận đặt hàng"</strong> bên dưới để hoàn tất.
+    </div>
+  `;
+
+  // Mở khoá nút đặt hàng
+  const btn = document.getElementById('btnPlace');
+  btn.disabled         = false;
+  btn.textContent      = '✅ Xác nhận đặt hàng';
+  btn.style.background = '#28a745';
+  btn.style.color      = '#fff';
+}
+
+// ============================================================
+// ĐẶT HÀNG
+// ============================================================
+async function placeOrder() {
+  const name    = document.getElementById('ckName').value.trim();
+  const phone   = document.getElementById('ckPhone').value.trim();
+  const email   = document.getElementById('ckEmail').value.trim();
+  const address = document.getElementById('ckAddress').value.trim();
+  const payment = document.getElementById('ckPayment').value;
+  const note    = document.getElementById('ckNote').value.trim();
+
+  if (!name || !phone || !address) {
+    showToast('Vui lòng điền đầy đủ: Tên, SĐT, Địa chỉ', 'error'); return;
+  }
+  if (!/^0[0-9]{9}$/.test(phone)) {
+    showToast('Số điện thoại không hợp lệ (VD: 0901234567)', 'error'); return;
+  }
+
+  // ✅ Chặn nếu chọn chuyển khoản mà chưa xác nhận
+  if (payment === 'transfer' && !transferConfirmed) {
+    showToast('Vui lòng quét QR và bấm "Tôi đã chuyển khoản xong"!', 'error');
+    document.getElementById('transferBanner').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const btn = document.getElementById('btnPlace');
+  btn.disabled    = true;
+  btn.textContent = '⏳ Đang xử lý...';
+
+  try {
+    const res  = await fetch(API, {
+      method: 'POST', ...FETCH_OPTS,
+      body: JSON.stringify({ action: 'checkout', name, phone, email, address, payment, note, coupon: appliedCoupon || '', discount: discountAmount })
+    });
+    const data = await res.json();
+    if (data.success) {
+      clearInterval(countdownTimer);
+      showOrderSuccess(data.order_code, phone);
+      cartData = { items: [], count: 0, subtotal: 0, total: 0 };
+      discountAmount = 0; appliedCoupon = null;
+      renderCart(); updateSummary();
+    } else {
+      showToast(data.message || 'Lỗi đặt hàng', 'error');
+      btn.disabled    = false;
+      btn.textContent = '✅ Xác nhận đặt hàng';
+    }
+  } catch (e) {
+    showToast('Không kết nối được server', 'error');
+    btn.disabled    = false;
+    btn.textContent = '✅ Xác nhận đặt hàng';
+  }
+}
+
+function showOrderSuccess(orderCode, phone) {
+  document.getElementById('modalContent').innerHTML = `
+    <div class="order-success">
+      <div class="success-icon">🎉</div>
+      <h4>Đặt hàng thành công!</h4>
+      <p style="color:var(--text-mid);margin-bottom:8px">Mã đơn hàng của bạn:</p>
+      <div class="order-code-badge">${orderCode}</div>
+      <p style="margin-top:16px;color:var(--text-mid);font-size:14px">
+        Chúng tôi sẽ liên hệ xác nhận trong vòng 30 phút.<br>
+        Cảm ơn bạn đã mua sắm tại Keddy! 🐾
+      </p>
+      <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px;align-items:center">
+        <a href="track-order.html?code=${encodeURIComponent(orderCode)}&phone=${encodeURIComponent(phone)}"
+           style="display:inline-block;background:#e8974a;color:#fff;border-radius:50px;padding:12px 28px;text-decoration:none;font-weight:800;font-size:15px;">
+          🔍 Tra cứu đơn hàng
+        </a>
+        <div style="display:flex;gap:12px;">
+          <a href="products.html" style="display:inline-block;background:var(--blue);color:#fff;border-radius:50px;padding:12px 24px;text-decoration:none;font-weight:800">
+            🛍 Tiếp tục mua sắm
+          </a>
+          <button onclick="closeCheckout()" style="background:none;border:2px solid var(--gray-border);border-radius:50px;padding:12px 24px;font-family:Nunito,sans-serif;font-weight:700;cursor:pointer;color:var(--text-mid)">
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+document.getElementById('checkoutModal').addEventListener('click', function(e) {
+  if (e.target === this) closeCheckout();
+});
+
+const currentUser = JSON.parse(localStorage.getItem('user'));
+const userBtn     = document.getElementById('user-btn');
+const userName    = document.getElementById('user-name');
+if (currentUser) {
+  userName.textContent = currentUser.username;
+  userBtn.addEventListener('click', e => { e.preventDefault(); location.href = 'profile.html'; });
+} else {
+  userBtn.addEventListener('click', e => { e.preventDefault(); location.href = 'login.html'; });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', loadCart);
+</script>
+</body>
+</html>
